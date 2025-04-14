@@ -1,0 +1,76 @@
+{
+    "compilerOptions": {
+        // 全部配置的链接  https://www.cnblogs.com/vant-xie/p/16744406.html
+        // 和 references 配合使用，可以构建一个由多个项目组成的解决方案
+        // "composite": true,
+        // 指定ECMAScript目标版本
+        "target": "ESNext",
+        // 是否校验TypeScript数据类型
+        "useDefineForClassFields": true,
+        // 下面两个配对
+        // // 指定生成哪个模块系统代码
+        "module": "NodeNext",
+        // 决定如何处理模块
+        "moduleResolution": "NodeNext",
+        // 下面两个配对
+        // "module": "ESNext",
+        // // 决定如何处理模块。
+        // "moduleResolution": "Node16",
+        // 是否删除注释
+        "removeComments": true,
+        // 指定输出目录
+        "outDir": "dist/types",
+        // 启用所有严格类型检查选项。
+        // 启用 --strict相当于启用 --noImplicitAny, --noImplicitThis, --alwaysStrict，
+        // --strictNullChecks和 --strictFunctionTypes和--strictPropertyInitialization。
+        "strict": true,
+        "jsx": "preserve", // 在.tsx文件里支持JSX
+        // "sourceMap": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        // 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查。
+        // 两者功能相似，通常只需启用 "esModuleInterop": true，它会自动包含 allowSyntheticDefaultImports 的行为
+        // "allowSyntheticDefaultImports": true,
+        // 忽略所有的声明文件（ *.d.ts）的类型检查。
+        "skipLibCheck": true,
+        // 会阻止生成任何输出文件（包括 .d.ts）
+        // "noEmit": true,
+        // 要求生成声明文件
+        "declaration": true,
+        "declarationDir": "./dist/types",
+        // 要包含的类型声明文件名列表
+        "types": ["vitest/globals"],
+        "baseUrl": "./",	// 解析非相对模块的基地址，默认是当前目录
+        // 利用增量编译加速构建，提高构建速度
+        "incremental": true,
+        "tsBuildInfoFile": "./build-cache/build-info.json",
+        // ==============================
+        // 模块名到基于 baseUrl的路径映射的列表。
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+        },
+        // 编译过程中需要引入的库文件的列表。
+        "lib": [
+            "ESNext",
+            "DOM",
+            "DOM.Iterable",
+            "ScriptHost",
+            "WebWorker"
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.d.ts",
+        "src/**/*.tsx",
+        "src/**/*.js",
+        "src/**/*.jsx",
+        "src/**/*.json",
+        "src/**/*.cjs",
+        "src/**/*.mjs"
+    ],
+    "exclude": ["src/**/*.test.ts", "node_modules", "dist"],
+    // "references": [{"path": "./tsconfig.node.json"}]
+}

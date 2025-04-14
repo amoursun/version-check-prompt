@@ -1,0 +1,72 @@
+{
+    "name": "version-check-prompt",
+    "version": "1.0.1",
+    "description": "前端资源更新检查提示",
+    "keywords": [
+        "version",
+        "chunk",
+        "update",
+        "upgrade",
+        "check",
+        "polling",
+        "prompt"
+    ],
+    "homepage": "https://github.com/amoursun/version-check-prompt",
+    "bugs": {
+        "url": "https://github.com/amoursun/version-check-prompt/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:amoursun/version-check-prompt.git"
+    },
+    "author": "gyl<gylssm@126.com>",
+    "license": "MIT",
+    "type": "module",
+    "exports": {
+        ".": {
+            "browser": "./dist/browser/index.js",
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js",
+            "typesVersions": {
+                "*": {
+                    "*": "./dist/types/*"
+                }
+            }
+        }
+    },
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "browser": "dist/browser/index.js",
+    "unpkg": "dist/umd/index.min.js",
+    "types": "dist/types/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "npm run clean && rslib build",
+        "dev": "rslib build --watch",
+        "test": "vitest",
+        "clean": "rimraf dist",
+        "changeset": "changeset",
+        "build:version": "zx script/config-version.js",
+        "prepare": "pnpm run build"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
+        "@changesets/cli": "^2.28.1",
+        "@rslib/core": "^0.6.2",
+        "@testing-library/jest-dom": "^6.6.3",
+        "@types/node": "^22.14.1",
+        "prettier": "^3.5.3",
+        "rimraf": "^6.0.1",
+        "rsbuild-plugin-dts": "^0.6.3",
+        "typescript": "^5.8.3",
+        "vitest": "^3.1.1",
+        "zx": "^8.5.2"
+    },
+    "packageManager": "pnpm@9.0.0",
+    "engines": {
+        "node": ">=18.0.0",
+        "pnpm": ">=9.0.0"
+    }
+}
