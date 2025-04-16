@@ -1,5 +1,5 @@
-import { IVersionCheckOptions, IVersionModeEnum } from '@/types';
-import { noop } from '@/utils';
+import { IVersionCheckOptions, IVersionModeEnum } from '../types';
+import { noop } from '../utils';
 
 export const defaultOptions: IVersionCheckOptions = {
     usable: true,

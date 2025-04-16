@@ -1,7 +1,7 @@
-import { IVersionModeEnum } from '@/types';
-import { ResponseResultData, ResponseStatusEnum, VersionJson } from '@/types/polling';
+import { IVersionModeEnum } from '../types';
+import { ResponseResultData, ResponseStatusEnum, VersionJson } from '../types/polling';
 import { compareRealArray, compareVersion, htmlSourceParser } from './method';
-import { IHtmlSourceParserItem, IHtmlSourceParserResult } from '@/types/common';
+import { IHtmlSourceParserItem, IHtmlSourceParserResult } from '../types/common';
 
 
 

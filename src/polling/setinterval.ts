@@ -1,7 +1,7 @@
-import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum, IWorkerData, IWorkerMessageCodeEnum, VersionControl } from '@/types';
-import { ResponseResultData, ResponseStatusEnum } from '@/types/polling';
-import { log } from '@/utils';
-import { checkUpdated, handleChunkFetch, handleEtagFetch, handleJsonFetch } from '@/utils/util-polling';
+import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum, IWorkerData, IWorkerMessageCodeEnum, VersionControl } from '../types';
+import { ResponseResultData, ResponseStatusEnum } from '../types/polling';
+import { log } from '../utils';
+import { checkUpdated, handleChunkFetch, handleEtagFetch, handleJsonFetch } from '../utils/util-polling';
 
 export class IntervalPollingService {
     private options: IVersionCheckOptions;

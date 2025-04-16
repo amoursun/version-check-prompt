@@ -1,4 +1,4 @@
-import { IHtmlSourceParserResult } from "@/types/common";
+import { IHtmlSourceParserResult } from '../types/common';
 
 export const noop = () => {};
 

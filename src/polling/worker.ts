@@ -6,15 +6,15 @@ import {
     IWorkerData,
     IWorkerMessageCodeEnum,
     VersionControl,
-} from '@/types';
-import { closeWorker, compareVersion, createWorker, log } from '@/utils';
+} from '../types';
+import { closeWorker, compareVersion, createWorker, log } from '../utils';
 import {
     checkUpdated,
     handleChunkFetch,
     handleEtagFetch,
     handleJsonFetch,
 } from '../utils/util-polling';
-import { ResponseResultData, ResponseStatusEnum } from '@/types/polling';
+import { ResponseResultData, ResponseStatusEnum } from '../types/polling';
 
 export class WorkerPollingService {
     private options: IVersionCheckOptions;

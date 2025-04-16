@@ -1,5 +1,5 @@
-import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum } from '@/types';
-import { defaultOptions } from '@/common/constant';
+import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum } from './types';
+import { defaultOptions } from './common/constant';
 import { IntervalPollingService } from './polling/setinterval';
 import { WorkerPollingService } from './polling/worker';
 
