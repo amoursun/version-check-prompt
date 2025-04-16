@@ -31,6 +31,8 @@ export interface IVersionCheckPrompt {
     refresh: () => void;
     // 重置 30s 后重新检测
     reset: () => void;
+    // 手动检测
+    check: () => void;
     // 注销卸载
     dispose: () => void;
 }
