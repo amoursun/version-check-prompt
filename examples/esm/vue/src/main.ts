@@ -11,7 +11,6 @@ import './assets/main.css';
 //  *
 //  */
 // createVersionCheckPrompt({
-//   // eventTriggerList: ['popstate'],
 //   pollingTime: 30 * 1000,
 //   // silent: import.meta.env.MODE === 'development', // 开发环境下不检测
 //   onUpdate: (self: any) => {
