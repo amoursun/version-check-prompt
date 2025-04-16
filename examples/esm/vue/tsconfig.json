@@ -1,23 +1,18 @@
 {
+    "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
     "compilerOptions": {
-        "target": "ESNext",
-        "useDefineForClassFields": true,
         "module": "ESNext",
         "moduleResolution": "bundler",
         "removeComments": true,
-        "outDir": "dist/types",
         "strict": true,
         "jsx": "preserve", // 在.tsx文件里支持JSX
         "resolveJsonModule": true,
         "isolatedModules": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "noEmit": true,
-        "allowImportingTsExtensions": true,
-        "types": ["vitest/globals"],
-        "baseUrl": "./",
-        "incremental": true,
-        "tsBuildInfoFile": "./build-cache/build-info.json",
+        "types": [],
+        "baseUrl": "./",	// 解析非相对模块的基地址，默认是当前目录
+        // 模块名到基于 baseUrl的路径映射的列表。
         "paths": {
             "@/*": [
                 "src/*"
@@ -31,16 +26,6 @@
             "ScriptHost",
             "WebWorker"
         ]
-    },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.d.ts",
-        "src/**/*.tsx",
-        "src/**/*.js",
-        "src/**/*.jsx",
-        "src/**/*.json",
-        "src/**/*.cjs",
-        "src/**/*.mjs"
-    ],
-    "exclude": ["src/**/*.test.ts", "node_modules", "dist"],
+  },
+  "exclude": ["src/**/*.test.ts", "node_modules", "dist"],
 }

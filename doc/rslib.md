@@ -1,5 +1,7 @@
 ## Rslib
 - 官方链接: https://lib.rsbuild.dev/zh/guide/solution/nodejs
+- https://lib.rsbuild.dev/zh/guide/basic/typescript
+- https://lib.rsbuild.dev/zh/config/lib/format
 
 avaScript/TypeScript 库开发工具 Rslib，由 web-infra-dev 团队开发，基于 Rsbuild 的库开发工具链，专注于简化 JavaScript/TypeScript 库的构建与发布流程。
 
