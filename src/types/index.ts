@@ -24,7 +24,14 @@ export enum IWorkerMessageCodeEnum {
 export type IObject = Record<string, unknown>;
 
 export interface IVersionCheckPrompt {
-    
+    // 挂载
+    mount: () => void;
+    // 刷新
+    refresh: () => void;
+    // 重置 30s 后重新检测
+    reset: () => void;
+    // 注销卸载
+    dispose: () => void;
 }
 
 export interface IVersionCheckOptions {
@@ -32,7 +39,7 @@ export interface IVersionCheckOptions {
      * 是否可使用, 主要针对本地开发环境, 可以通过这个字段禁用版本检查
      * @default true
      */
-    usable: boolean;
+    usable?: boolean;
     /**
      * Type of version check
      * @default 'etag'
@@ -46,7 +53,10 @@ export interface IVersionCheckOptions {
      * Json url
      */
     jsonUrl?: string;
-    eventTriggerList?: string[];
+    /**
+     * 触发版本检测的事件名称列表
+     */
+    triggerEvents?: string[];
     /**
      * 轮训 time
      * @default 1 * 60 * 1000 (1 minute)
@@ -71,6 +81,7 @@ export type IWorkerData = Pick<IVersionCheckOptions,
     | 'jsonUrl'
     | 'pollingTime'
     | 'forbiddenPolling'
+    | 'visibilityUsable'
 >;
 
 export type VersionControl = {

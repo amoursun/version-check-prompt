@@ -108,7 +108,7 @@ export class WorkerPollingService {
             this.data.pollingTime,
         );
     };
-    
+
     /**
      * 处理从 Worker 发送过来的消息
      *
@@ -184,7 +184,7 @@ export class WorkerPollingService {
             self.onmessage = this.workerSelfMessage;
         });
 
-        // 
+        // 监听工作线程的消息
         this.worker.onmessage = this.workerMessage;
     
         this.worker.postMessage({

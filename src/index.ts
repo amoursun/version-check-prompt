@@ -34,7 +34,7 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
     /**
      * 创建实例
      */
-    createInstance() {
+    private createInstance() {
         const mode = this.options.mode;
         // 判断是否可用, 开发环境禁用版本检查
         if (this.usable && this.PollingService) {
@@ -52,21 +52,21 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
     /**
      * 启动实例的方法
      */
-    mount() {
+    public mount() {
         this.instance?.mount();
     }
 
     /**
      * 刷新当前页面
      */
-    refresh() {
+    public refresh() {
         window.location.reload();
     }
 
     /**
      * 取消当前操作并在30毫秒后重新开始。
      */
-    cancel() {
+    public reset() {
         setTimeout(this.mount, 30);
     }
 
@@ -89,7 +89,7 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
     /**
      * 销毁实例
      */
-    dispose() {
+    public dispose() {
         this.removeEvents();
         this.instance?.dispose();
     }
