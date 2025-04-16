@@ -108,6 +108,7 @@ export class WorkerPollingService {
             this.data.pollingTime,
         );
     };
+    
     /**
      * 处理从 Worker 发送过来的消息
      *
