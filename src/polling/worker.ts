@@ -1,5 +1,6 @@
 import {
     IVersionCheckOptions,
+    IVersionCheckPrompt,
     IVersionCheckStatusEnum,
     IVersionModeEnum,
     IWorkerData,
@@ -149,7 +150,7 @@ export class WorkerPollingService {
                 this.control.startPolling();
             }
         }
-        else {
+        else if (code === IWorkerMessageCodeEnum.CHECK) {
             // 触发检查
             this.control.check();
         }
@@ -167,7 +168,7 @@ export class WorkerPollingService {
         if (code === IVersionCheckStatusEnum.UPDATED) {
             this.dispose(); // 注销
             // 提醒用户更新
-            this.options.onUpdate?.(this);
+            this.options.onUpdate?.(this as unknown as IVersionCheckPrompt);
         }
     };
     
@@ -217,6 +218,12 @@ export class WorkerPollingService {
             code: IWorkerMessageCodeEnum.RESUME,
         });
     };
+
+    check = () => {
+        this.worker.postMessage({
+            code: IWorkerMessageCodeEnum.CHECK,
+        });
+    }
 
     private clearInterval = () => {
         if (this.timerId) {

@@ -1,4 +1,4 @@
-import { IVersionCheckOptions, IVersionModeEnum, IWorkerData, IWorkerMessageCodeEnum, VersionControl } from '@/types';
+import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum, IWorkerData, IWorkerMessageCodeEnum, VersionControl } from '@/types';
 import { ResponseResultData, ResponseStatusEnum } from '@/types/polling';
 import { log } from '@/utils';
 import { checkUpdated, handleChunkFetch, handleEtagFetch, handleJsonFetch } from '@/utils/util-polling';
@@ -61,7 +61,7 @@ export class IntervalPollingService {
                 // this.control.cacheData = res.data;
                 this.dispose(); // 注销
                 // 提醒用户更新
-                this.options.onUpdate?.(this);
+                this.options.onUpdate?.(this as unknown as IVersionCheckPrompt);
             }
         });
     };
@@ -137,29 +137,47 @@ export class IntervalPollingService {
         }
     };
 
-    mount() {
+    /**
+     * 挂载方法: 启动工作进程
+     */
+    public mount() {
         // 启动
         this.handleMessage({
             code: IWorkerMessageCodeEnum.START,
         });
     }
-    pause = () => {
+    /**
+     * 暂停任务
+     */
+    public pause = () => {
         this.handleMessage({
             code: IWorkerMessageCodeEnum.PAUSE,
         });
     };
-    resume = () => {
+    /**
+     * 恢复任务
+     */
+    public resume = () => {
         this.handleMessage({
             code: IWorkerMessageCodeEnum.RESUME,
         });
     };
+    /**
+     * 检查方法
+     */
+    public check = () => {
+        this.handleMessage({
+            code: IWorkerMessageCodeEnum.CHECK,
+        });
+    };
+    
     private clearInterval = () => {
         if (this.timerId) {
             clearInterval(this.timerId);
             this.timerId = null;
         }
     };
-    dispose = () => {
+    public dispose = () => {
         this.clearInterval();
     };
 }

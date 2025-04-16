@@ -70,6 +70,10 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
         setTimeout(this.mount, 30);
     }
 
+    public check() {
+        this.instance?.check();
+    }
+
     /**
      * 添加事件的方法
      */

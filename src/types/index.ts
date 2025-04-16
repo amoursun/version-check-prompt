@@ -19,6 +19,7 @@ export enum IWorkerMessageCodeEnum {
     START = 'start',
     PAUSE = 'pause',
     RESUME = 'resume',
+    CHECK = 'check',
 }
 
 export type IObject = Record<string, unknown>;
@@ -53,10 +54,6 @@ export interface IVersionCheckOptions {
      * Json url
      */
     jsonUrl?: string;
-    /**
-     * 触发版本检测的事件名称列表
-     */
-    triggerEvents?: string[];
     /**
      * 轮训 time
      * @default 1 * 60 * 1000 (1 minute)
