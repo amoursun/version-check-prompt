@@ -43,7 +43,7 @@
         "test": "vitest",
         "clean": "rimraf dist",
         "changeset": "changeset",
-        "build:bump": "zx script/bump.mjs",
+        "build:bump": "zx script/package-config.mjs",
         "build:version": "zx script/config-version.js",
         "prepare": "pnpm run build"
     },
