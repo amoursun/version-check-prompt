@@ -44,7 +44,7 @@
         "clean": "rimraf dist",
         "changeset": "changeset",
         "build:package": "zx script/package-config.js",
-        "build:json-version": "zx script/config-version.js",
+        "build:test:version": "zx script/config-version.cjs -o dest/json",
         "prepare": "pnpm run build"
     },
     "devDependencies": {
