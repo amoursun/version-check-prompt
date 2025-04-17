@@ -43,8 +43,8 @@
         "test": "vitest",
         "clean": "rimraf dist",
         "changeset": "changeset",
-        "build:bump": "zx script/package-config.mjs",
-        "build:version": "zx script/config-version.js",
+        "build:package": "zx script/package-config.js",
+        "build:json-version": "zx script/config-version.js",
         "prepare": "pnpm run build"
     },
     "devDependencies": {

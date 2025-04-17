@@ -1,9 +1,9 @@
 #!/usr/bin/env zx
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { parseArgs } from 'node:util';
-import { $, chalk } from 'zx';
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const { parseArgs } = require('node:util');
+const { $, chalk } = require('zx');
 
 $.verbose = false;
 
