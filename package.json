@@ -1,6 +1,6 @@
 {
     "name": "version-check-prompt",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "前端资源更新检查提示",
     "keywords": [
         "version",
@@ -43,6 +43,7 @@
         "test": "vitest",
         "clean": "rimraf dist",
         "changeset": "changeset",
+        "build:bump": "zx script/bump.mjs",
         "build:version": "zx script/config-version.js",
         "prepare": "pnpm run build"
     },
