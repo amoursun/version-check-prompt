@@ -1,4 +1,4 @@
-import { IVersionModeEnum } from '../types';
+import { IChunkCheckTypesEnum, IVersionCheckOptions, IVersionModeEnum } from '../types';
 import { ResponseResultData, ResponseStatusEnum, VersionJson } from '../types/polling';
 import { compareRealArray, compareVersion, htmlSourceParser } from './method';
 import { IHtmlSourceParserItem, IHtmlSourceParserResult } from '../types/common';
@@ -11,12 +11,10 @@ function getResponseStatus(success: boolean): ResponseStatusEnum {
 export function handleEtagFetch(url?: string): Promise<ResponseResultData> {
     const mode = IVersionModeEnum.ETAG;
     if (!url) {
-        return Promise.resolve({
-            status: ResponseStatusEnum.FAIL,
-            mode,
-            data: null,
-            error: `[${mode}] htmlUrl is null`,
-        });
+        const error = new Error(
+            `[${mode}] htmlUrl is null, please check your options`
+        );
+        return Promise.reject(error);
     }
     return fetch(url, {
         method: 'HEAD',
@@ -36,12 +34,10 @@ export function handleEtagFetch(url?: string): Promise<ResponseResultData> {
 export function handleChunkFetch(url?: string): Promise<ResponseResultData> {
     const mode = IVersionModeEnum.CHUNK;
     if (!url) {
-        return Promise.resolve({
-            status: ResponseStatusEnum.FAIL,
-            mode,
-            data: null,
-            error: `[${mode}] htmlUrl is null`,
-        });
+        const error = new Error(
+            `[${mode}] htmlUrl is null, please check your options`
+        );
+        return Promise.reject(error);
     }
     return fetch(`${url}?t=${Date.now()}`)
         .then((response) => response.text())
@@ -60,12 +56,10 @@ export function handleChunkFetch(url?: string): Promise<ResponseResultData> {
 export function handleJsonFetch(url?: string): Promise<ResponseResultData> {
     const mode = IVersionModeEnum.JSON;
     if (!url) {
-        return Promise.resolve({
-            status: ResponseStatusEnum.FAIL,
-            mode,
-            data: null,
-            error: `[${mode}] jsonUrl is null`,
-        });
+        const error = new Error(
+            `[${mode}] jsonUrl is null, please check your options`
+        );
+        return Promise.reject(error);
     }
     return fetch(`${url}?t=${Date.now()}`)
         .then((response) => response.json())
@@ -111,17 +105,60 @@ function checkVersion(v1: VersionJson, v2: VersionJson): boolean {
     return compareVersion(version1, version2);
 }
 
-function checkDetail(arr1: IHtmlSourceParserItem[], arr2: IHtmlSourceParserItem[]) {
+function checkDetail(arr1: string[], arr2: string[]) {
     if (!arr1.length || !arr2.length) {
         return false;
     }
     return compareRealArray(arr1, arr2);
 }
-function checkChunk(v1: IHtmlSourceParserResult, v2: IHtmlSourceParserResult): boolean {
-    const linksChanged = checkDetail(v1.links, v2.links);
-    const scriptsChanged = checkDetail(v1.scripts, v2.scripts);
-    const stylesChanged = checkDetail(v1.styles, v2.styles);
-    return linksChanged || scriptsChanged || stylesChanged;
+function getCheckTypes(typeList?: IChunkCheckTypesEnum[]) {
+    function filterChunkCheckTypes(types?: IChunkCheckTypesEnum[]) {
+        const chunkCheckTypeSet = new Set(Object.values(IChunkCheckTypesEnum));
+        return (types || []).filter((type) => {
+            return chunkCheckTypeSet.has(type);
+        });
+    }
+    const types = filterChunkCheckTypes(typeList);
+    if (!types || !types.length) {
+        return [IChunkCheckTypesEnum.SCRIPT_SRC];
+    }
+    return types;
+}
+function getHtmlSourceParserItemValue(list: IHtmlSourceParserItem[], key: 'link' | 'text'): string[] {
+    return list.map((item) => item[key]).filter(Boolean);
+}
+function checkChunk(
+    v1: IHtmlSourceParserResult,
+    v2: IHtmlSourceParserResult,
+    checkTypes?: IVersionCheckOptions['chunkCheckTypes']
+): boolean {
+    const types = getCheckTypes(checkTypes);
+    return types.some((type) => {
+        switch (type) {
+            case IChunkCheckTypesEnum.LINK_CSS:
+                return checkDetail(
+                    getHtmlSourceParserItemValue(v1.links, 'link'),
+                    getHtmlSourceParserItemValue(v2.links, 'link')
+                );
+            case IChunkCheckTypesEnum.STYLE_CSS:
+                return checkDetail(
+                    getHtmlSourceParserItemValue(v1.styles, 'text'),
+                    getHtmlSourceParserItemValue(v2.styles, 'text')
+                );
+            case IChunkCheckTypesEnum.SCRIPT:
+                return checkDetail(
+                    getHtmlSourceParserItemValue(v1.scripts, 'text'),
+                    getHtmlSourceParserItemValue(v2.scripts, 'text')
+                );
+            case IChunkCheckTypesEnum.SCRIPT_SRC:
+                return checkDetail(
+                    getHtmlSourceParserItemValue(v1.scripts, 'link'),
+                    getHtmlSourceParserItemValue(v2.scripts, 'link')
+                );
+            default:
+                return false;
+        }
+    });
 }
 
 /**
@@ -130,7 +167,12 @@ function checkChunk(v1: IHtmlSourceParserResult, v2: IHtmlSourceParserResult): b
  * @param data 当前版本数据
  * @param result 请求版本数据
  */
-export function checkUpdated(type: IVersionModeEnum, data: ResponseResultData['data'], result: ResponseResultData): boolean {
+export function checkUpdated(
+    data: ResponseResultData['data'],
+    result: ResponseResultData,
+    options: Pick<IVersionCheckOptions, 'mode' | 'chunkCheckTypes'>
+): boolean {
+    const { mode, chunkCheckTypes } = options || {};
     if (!data) {
         // 没有版本数据，不更新
         return false;
@@ -139,20 +181,24 @@ export function checkUpdated(type: IVersionModeEnum, data: ResponseResultData['d
         // 没有版本数据，不更新
         return false;
     }
-    if (type === IVersionModeEnum.ETAG) {
+    if (mode === IVersionModeEnum.ETAG) {
         // etag 模式
         return checkEtag(data as string, result.data as string);
     }
-    else if (type === IVersionModeEnum.JSON) {
+    else if (mode === IVersionModeEnum.JSON) {
         // json 模式
         return checkVersion(data as VersionJson, result.data as VersionJson);
     }
-    else if (type === IVersionModeEnum.CHUNK) {
+    else if (mode === IVersionModeEnum.CHUNK) {
         // chunk 模式
         /**
          * 没有直接比较 html text, 而是比较 html 里面的资源链接, script link style 不变化就不更新
          */
-        return checkChunk(data as IHtmlSourceParserResult, result.data as IHtmlSourceParserResult);
+        return checkChunk(
+            data as IHtmlSourceParserResult,
+            result.data as IHtmlSourceParserResult,
+            chunkCheckTypes
+        );
     }
     return false;
 }

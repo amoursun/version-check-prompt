@@ -10,6 +10,7 @@ export class IntervalPollingService {
     constructor(options: IVersionCheckOptions) {
         this.options = options;
         this.created();
+        this.mount();
     }
 
     private get type() {
@@ -34,14 +35,19 @@ export class IntervalPollingService {
      * 处理开始操作的方法, 存储首次版本信息, 方便后续对比
      */
     private handleStart = () => {
-        this.control.fetch(this.type).then((res) => {
-            if (res.status === ResponseStatusEnum.OK) {
-                this.control.data = res.data;
-            }
-            else if (res.status === ResponseStatusEnum.FAIL) {
-                log(res.error);
-            }
-        });
+        this.control.fetch(this.type)
+            .then((res) => {
+                if (res.status === ResponseStatusEnum.OK) {
+                    this.control.data = res.data;
+                }
+                else if (res.status === ResponseStatusEnum.FAIL) {
+                    log(res.error);
+                    this.options.onError?.(new Error(res.error || 'unknown error'));
+                }
+            })
+            .catch(error => {
+                this.options.onError?.(error);
+            });
     };
     /**
      * 处理检查更新逻辑的方法
@@ -53,9 +59,12 @@ export class IntervalPollingService {
                 return;
             }
             const isUpdated = checkUpdated(
-                this.type,
                 this.control.data,
-                res
+                res,
+                {
+                    mode: this.type,
+                    chunkCheckTypes: this.options.chunkCheckTypes,
+                }
             );
             if (isUpdated) {
                 // this.control.cacheData = res.data;
@@ -78,9 +87,11 @@ export class IntervalPollingService {
         if (type === IVersionModeEnum.ETAG) {
             return handleEtagFetch(htmlUrl);
         }
+        // chunk
         else if (type === IVersionModeEnum.CHUNK) {
             return handleChunkFetch(htmlUrl);
         }
+        // json
         else if (type === IVersionModeEnum.JSON) {
             return handleJsonFetch(jsonUrl);
         }
@@ -100,6 +111,9 @@ export class IntervalPollingService {
      * @returns 无返回值
      */
     private startPolling = () => {
+        if (this.timerId) {
+            return;
+        }
         this.timerId = setInterval(
             this.control.check,
             this.options.pollingTime,

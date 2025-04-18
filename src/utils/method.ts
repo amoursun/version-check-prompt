@@ -40,12 +40,39 @@ export function htmlSourceParser(html: string): IHtmlSourceParserResult {
     //     content: meta.content
     // }));
     // 提取 link 资源（CSS、预加载等）
-    const links = linkList.map(link => link.href).filter(link => !!link);
+    const links = linkList.map(link => {
+        const href = link.href;
+        if (link.rel === 'stylesheet' || /\.css$/i.test(href)) {
+            return {
+                link: href,
+                text: '',
+            };
+        }
+        return null;
+    }).filter(link => !!link);
     // 提取 script 资源
-    const scripts = scriptList.map(script => script.src).filter(link => !!link);
+    const scripts = scriptList.map(script => {
+        const {src, textContent} = script;
+        if (src || textContent) {
+            return {
+                link: src,
+                text: textContent || '',
+            };
+        }
+        return null;
+    }).filter(link => !!link);
 
     // 提取内联 style 和外部样式
-    const styles = styleList.map(style => style.textContent || '').filter(link => !!link);
+    const styles = styleList.map(style => {
+        const styleText = style.textContent || '';
+        if (styleText) {
+            return {
+                text: styleText,
+                link: '',
+            };
+        }
+        return null;
+    }).filter(link => !!link);
     return {
         links,
         scripts,

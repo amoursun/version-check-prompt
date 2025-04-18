@@ -13,10 +13,12 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
 
     private visibilityHandler = () => {
         if (document.visibilityState === 'visible') {
-            this.instance?.pause();
+            console.log('页面可见, 恢复轮训');
+            this.instance?.resume();
         }
         else if (document.visibilityState === 'hidden') {
-            this.instance?.resume();
+            console.log('页面隐藏, 暂停轮训');
+            this.instance?.pause();
         }
     };
 
@@ -78,7 +80,7 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
      * 添加事件的方法
      */
     private addEvents() {
-        if (!this.options.visibilityUsable) {
+        if (this.options.visibilityUsable) {
             document.addEventListener('visibilitychange', this.visibilityHandler);
         }
     }
@@ -86,7 +88,7 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
      * 移除事件监听器
      */
     private removeEvents() {
-        if (!this.options.visibilityUsable) {
+        if (this.options.visibilityUsable) {
             document.removeEventListener('visibilitychange', this.visibilityHandler);
         }
     }

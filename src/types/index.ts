@@ -37,6 +37,25 @@ export interface IVersionCheckPrompt {
     dispose: () => void;
 }
 
+export enum IChunkCheckTypesEnum {
+    /**
+     * link css
+     */
+    LINK_CSS = 'link_css',
+    /**
+     * style css
+     */
+    STYLE_CSS = 'style_css',
+    /**
+     * script
+     */
+    SCRIPT = 'script',
+    /**
+     * script src
+     */
+    SCRIPT_SRC = 'script_src',
+}
+
 export interface IVersionCheckOptions {
     /**
      * 是否可使用, 主要针对本地开发环境, 可以通过这个字段禁用版本检查
@@ -48,6 +67,12 @@ export interface IVersionCheckOptions {
      * @default 'etag'
      */
     mode: IVersionModeEnum;
+    /**
+     * chunk 模式下的文件类型, 默认只检测 src 属性为 js
+     * @description [] => 表示检查 script src 属性为 js 的文件
+     * @default [IChunkCheckTypesEnum.SCRIPT_SRC]
+     */
+    chunkCheckTypes?: IChunkCheckTypesEnum[];
     /**
      * Html url
      */
@@ -71,7 +96,8 @@ export interface IVersionCheckOptions {
      * @default false (true 暂停, false 恢复)
      */
     visibilityUsable?: boolean;
-    onUpdate: (self: IVersionCheckPrompt) => void;
+    onUpdate?: (self: IVersionCheckPrompt) => void;
+    onError?: (error: Error) => void;
 }
 
 export type IWorkerData = Pick<IVersionCheckOptions,
