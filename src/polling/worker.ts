@@ -63,7 +63,7 @@ export class WorkerPollingService {
                 // this.control.cacheData = res.data;
                 // TODO: 通知更新逻辑
                 self.postMessage({
-                    code: 'update',
+                    code: IVersionCheckStatusEnum.UPDATED,
                 });
             }
         });

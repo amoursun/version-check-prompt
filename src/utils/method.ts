@@ -81,8 +81,8 @@ export function compareRealArray(arr1: string[], arr2: string[]) {
  * @param v2 版本2
  * @see https://semver.org/lang/zh-CN/
  */
-export function compareVersion(v1?: string, v2?: string) {
-    return v1 === v2;
+export function compareVersion(v1: string, v2: string) {
+    return v1 !== v2;
 }
 
 export function createWorker(fn: () => void) {
