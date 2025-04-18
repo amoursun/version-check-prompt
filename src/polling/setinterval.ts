@@ -1,14 +1,22 @@
-import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum, IWorkerData, IWorkerMessageCodeEnum, VersionControl } from '../types';
-import { ResponseResultData, ResponseStatusEnum } from '../types/polling';
+import {
+    IVersionCheckOptions,
+    IVersionCheckPrompt,
+    IVersionModeEnum,
+    IWorkerMessageCodeEnum,
+    VersionControl,
+} from '../types';
+import { IPollingService, ResponseResultData, ResponseStatusEnum } from '../types/polling';
 import { log } from '../utils';
 import { checkUpdated, handleChunkFetch, handleEtagFetch, handleJsonFetch } from '../utils/util-polling';
 
-export class IntervalPollingService {
+export class IntervalPollingService implements IPollingService {
+    private instance: IVersionCheckPrompt;
     private options: IVersionCheckOptions;
-    private timerId!: ReturnType<typeof setInterval> | null;
-    control!: VersionControl;
-    constructor(options: IVersionCheckOptions) {
+    private timerId: ReturnType<typeof setInterval> | null = null;
+    private control: VersionControl | null = null;
+    constructor(options: IVersionCheckOptions, instance: IVersionCheckPrompt) {
         this.options = options;
+        this.instance = instance;
         this.created();
         this.mount();
     }
@@ -34,30 +42,37 @@ export class IntervalPollingService {
     /**
      * 处理开始操作的方法, 存储首次版本信息, 方便后续对比
      */
-    private handleStart = () => {
-        this.control.fetch(this.type)
-            .then((res) => {
-                if (res.status === ResponseStatusEnum.OK) {
-                    this.control.data = res.data;
-                }
-                else if (res.status === ResponseStatusEnum.FAIL) {
-                    log(res.error);
-                    this.options.onError?.(new Error(res.error || 'unknown error'));
-                }
-            })
-            .catch(error => {
-                this.options.onError?.(error);
-            });
+    private handleStart = async (): Promise<void> => {
+        if (!this.control) {
+            throw new Error('Control is not initialized');
+        }
+        try {
+            const res = await this.control.fetch(this.type);
+            if (res.status === ResponseStatusEnum.OK) {
+                this.control.data = res.data;
+            }
+            else {
+                this.options.onError?.(new Error(res.error || 'Unknown error'));
+            }
+        } catch (error) {
+            this.options.onError?.(error instanceof Error ? error : new Error(String(error)));
+        }
     };
     /**
      * 处理检查更新逻辑的方法
      */
-    private handleCheck = () => {
-        this.control.fetch(this.type).then((res: ResponseResultData) => {
+    private handleCheck = async (): Promise<void> => {
+        if (!this.control) {
+            throw new Error('Control is not initialized');
+        }
+
+        try {
+            const res = await this.control.fetch(this.type);
             if (res.status === ResponseStatusEnum.FAIL) {
                 log(res.error);
                 return;
             }
+
             const isUpdated = checkUpdated(
                 this.control.data,
                 res,
@@ -66,13 +81,20 @@ export class IntervalPollingService {
                     chunkCheckTypes: this.options.chunkCheckTypes,
                 }
             );
+
             if (isUpdated) {
                 // this.control.cacheData = res.data;
                 this.dispose(); // 注销
                 // 提醒用户更新
-                this.options.onUpdate?.(this as unknown as IVersionCheckPrompt);
+                this.options.onUpdate?.(this.instance);
             }
-        });
+        } catch (error) {
+            this.options.onError?.(
+                error instanceof Error
+                    ? error
+                    : new Error(String(error))
+            );
+        }
     };
     /**
      * 处理不同类型的获取请求
@@ -81,26 +103,24 @@ export class IntervalPollingService {
      * @returns 根据获取类型返回不同的处理结果
      * @throws 若未提供必需的URL参数，则抛出错误
      */
-    private handleFetch = (type: IVersionModeEnum): Promise<ResponseResultData> => {
+    private handleFetch = async (type: IVersionModeEnum): Promise<ResponseResultData> => {
         const {htmlUrl, jsonUrl} = this.options;
-        // etag
-        if (type === IVersionModeEnum.ETAG) {
-            return handleEtagFetch(htmlUrl);
+
+        switch (type) {
+            case IVersionModeEnum.ETAG:
+                return handleEtagFetch(htmlUrl);
+            case IVersionModeEnum.CHUNK:
+                return handleChunkFetch(htmlUrl);
+            case IVersionModeEnum.JSON:
+                return handleJsonFetch(jsonUrl);
+            default:
+                return {
+                    status: ResponseStatusEnum.FAIL,
+                    mode: type,
+                    data: null,
+                    error: `[${type}] mode is not supported`,
+                };
         }
-        // chunk
-        else if (type === IVersionModeEnum.CHUNK) {
-            return handleChunkFetch(htmlUrl);
-        }
-        // json
-        else if (type === IVersionModeEnum.JSON) {
-            return handleJsonFetch(jsonUrl);
-        }
-        return Promise.resolve({
-            status: ResponseStatusEnum.FAIL,
-            mode: type as IVersionModeEnum,
-            data: null,
-            error: `[${type}] mode is not supported, please check your options`,
-        });
     };
 
     /**
@@ -111,9 +131,11 @@ export class IntervalPollingService {
      * @returns 无返回值
      */
     private startPolling = () => {
-        if (this.timerId) {
-            return;
+        if (!this.control) {
+            throw new Error('Control is not initialized');
         }
+
+        this.clearInterval();
         this.timerId = setInterval(
             this.control.check,
             this.options.pollingTime,
@@ -123,31 +145,36 @@ export class IntervalPollingService {
     private handleMessage = (data: {
         code: IWorkerMessageCodeEnum;
     }) => {
+        if (!this.control) {
+            throw new Error('Control is not initialized');
+        }
         const { code } = data;
-        if (code === IWorkerMessageCodeEnum.START) {
-            // 开始获取版本信息
-            this.control.start();
-            if (!this.options.forbiddenPolling) {
-                // 开始轮询检查
-                this.control.startPolling();
-            }
-        }
-        else if (code === IWorkerMessageCodeEnum.PAUSE) {
-            // 暂停轮询检查
-            this.control.pausePolling();
-        }
-        else if (code === IWorkerMessageCodeEnum.RESUME) {
-            // 恢复轮询检查
-            // 触发检查
-            this.control.check();
-            if (!this.options.forbiddenPolling) {
-                // 开始轮询检查
-                this.control.startPolling();
-            }
-        }
-        else {
-            // 触发检查
-            this.control.check();
+        switch (code) {
+            case IWorkerMessageCodeEnum.START:
+                // 开始获取版本信息
+                this.control.start();
+                if (!this.options.forbiddenPolling) {
+                    // 开始轮询检查
+                    this.control?.startPolling();
+                }
+                break;
+            case IWorkerMessageCodeEnum.PAUSE:
+                // 暂停轮询检查
+                this.control?.pausePolling();
+                break;
+            case IWorkerMessageCodeEnum.RESUME:
+                // 恢复轮询检查
+                // 触发检查
+                this.control?.check();
+                if (!this.options.forbiddenPolling) {
+                    // 开始轮询检查
+                    this.control?.startPolling();
+                }
+                break;
+            case IWorkerMessageCodeEnum.CHECK:
+                // 触发检查
+                this.control?.check();
+                break;
         }
     };
 
@@ -191,7 +218,16 @@ export class IntervalPollingService {
             this.timerId = null;
         }
     };
+
+    public reset(): void {
+        this.dispose();
+        this.created();
+        this.mount();
+    }
+
     public dispose = () => {
         this.clearInterval();
+        this.clearInterval();
+        this.control = null;
     };
 }

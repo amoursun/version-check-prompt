@@ -40,12 +40,13 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
         const mode = this.options.mode;
         // 判断是否可用, 开发环境禁用版本检查
         if (this.usable && this.PollingService) {
-            const isModeEffective = [IVersionModeEnum.ETAG, IVersionModeEnum.CHUNK, IVersionModeEnum.JSON].includes(mode);
+            const isModeEffective = Object.values(IVersionModeEnum).includes(mode);
             if (!isModeEffective) {
-                console.warn(`[${mode}] mode is not supported, only support ${IVersionModeEnum.ETAG}, ${IVersionModeEnum.CHUNK}, ${IVersionModeEnum.JSON} mode`);
+                this.options.onError?.(new Error(`[mode] ${mode} is not supported`));
+                console.warn(`[mode] ${mode} is not supported`);
                 return;
             }
-            this.instance = new this.PollingService(this.options);
+            this.instance = new this.PollingService(this.options, this);
             // 添加事件
             this.addEvents();
         }
