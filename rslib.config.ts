@@ -1,9 +1,15 @@
 /**
  * https://lib.rsbuild.dev/zh/config/lib/banner
+ * https://lib.rsbuild.dev/zh/config/rsbuild/output#outputcopy
+ * https://rspack.dev/zh/plugins/rspack/copy-rspack-plugin
  */
-import { defineConfig, LibConfig } from '@rslib/core';
+import { defineConfig, LibConfig, RslibConfig } from '@rslib/core';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 // import {pluginDts} from 'rsbuild-plugin-dts';
 import pkg from './package.json';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const bannerContent = `/*!
   * ${pkg.name} v${pkg.version}
@@ -16,6 +22,12 @@ const bannerContent = `/*!
 // 头部注入代码
 const banner = {
   js: bannerContent,
+};
+
+const source = {
+  entry: {
+    index: './src/index.ts',
+  },
 };
 
 function output(config: {
@@ -47,6 +59,7 @@ export default defineConfig({
     {
       format: 'esm',
       banner,
+      // source,
       output: output({
         type: 'esm',
       }),
@@ -65,6 +78,7 @@ export default defineConfig({
     {
       format: 'cjs',
       banner,
+      // source,
       output: output({
         type: 'cjs',
       }),
@@ -73,6 +87,7 @@ export default defineConfig({
     // {
     //   format: 'umd',
     //   banner,
+    //   // source,
     //   umdName: 'VersionCheckPrompt',
     //   autoExtension: false,
     //   output: {
@@ -85,6 +100,7 @@ export default defineConfig({
     {
       format: 'umd',
       banner,
+      // source,
       umdName: 'VersionCheckPrompt',
       output: output({
         minify: true,
@@ -94,11 +110,30 @@ export default defineConfig({
     {
       format: 'umd',
       banner,
+      // source,
       umdName: 'VersionCheckPrompt',
       autoExtension: false,
       output: output({
         type: 'umd',
       }),
+    },
+    {
+      format: 'cjs',
+      source: {
+        entry: {
+          index: path.resolve(__dirname, 'scripts/generate-version.js'),
+        },
+      },
+      output: {
+        target: 'node',
+        minify: false,
+        filename: {
+          js: 'generate-version.cjs',
+        },
+        distPath: {
+          root: `./dist/scripts`
+        },
+      },
     },
   ],
   plugins: [
@@ -114,15 +149,26 @@ export default defineConfig({
     //   }
     // }),
   ],
-  source: {
-    entry: {
-      index: './src/index.ts',
-    },
-  },
+  source,
   output: {
-    target: 'web',
+    target: 'web', // 默认值web
+    /**
+     * usage: 仅注入被使用的 API 的 polyfill
+     * entry: 全量注入 polyfill
+     * off: 不注入任何 polyfill
+     */
+    polyfill: 'usage', // 仅注入被使用的 API 的 polyfill
+    // 指定输出目录与源码目录分离
     distPath: {
       root: './dist',
+    },
+    copy: {
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'src'),
+          to: path.resolve(__dirname, 'dist/src'),
+        },
+      ],
     },
     overrideBrowserslist: [
       'chrome >= 87',
