@@ -1,15 +1,12 @@
 import { URL, fileURLToPath } from 'node:url';
-
-import vue from '@vitejs/plugin-vue';
-import vueJsx from '@vitejs/plugin-vue-jsx';
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import etag from 'etag';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
-    vueJsx(),
+    react(),
     {
       name: 'add-etag',
       configureServer(server) {

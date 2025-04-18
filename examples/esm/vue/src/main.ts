@@ -3,25 +3,25 @@ import App from './app.vue';
 import router from './router';
 import './assets/main.css';
 
-// import { createVersionCheckPrompt } from '../../../../src/index';
+import { createVersionCheckPrompt } from './src';
+import { IVersionCheckPrompt, IVersionModeEnum } from './src/types';
 
 // /**
 //  *
 //  * 调试VersionCheckPrompt
 //  *
 //  */
-// createVersionCheckPrompt({
-//   pollingTime: 30 * 1000,
-//   // silent: import.meta.env.MODE === 'development', // 开发环境下不检测
-//   onUpdate: (self: any) => {
-//     const result = confirm('页面有更新，点击确定刷新页面！');
-//     if (result) {
-//       self.onRefresh();
-//     } else {
-//       self.onCancel();
-//     }
-//   },
-// });
+createVersionCheckPrompt({
+    mode: IVersionModeEnum.CHUNK,
+    pollingTime: 30 * 1000,
+    visibilityUsable: true,
+    onUpdate: (self: IVersionCheckPrompt) => {
+        const result = confirm('页面有更新，点击确定刷新页面！');
+        if (result) {
+        } else {
+        }
+    },
+});
 
 const app = createApp(App);
 
