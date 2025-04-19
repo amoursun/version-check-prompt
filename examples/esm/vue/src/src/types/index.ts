@@ -13,6 +13,8 @@ export enum IVersionModeEnum {
 export enum IVersionCheckStatusEnum {
     NORMAL = 'normal',
     UPDATED = 'updated',
+    WORKER = 'worker',
+    ERROR = 'error',
 };
 
 export enum IWorkerMessageCodeEnum {
@@ -107,6 +109,7 @@ export type IWorkerData = Pick<IVersionCheckOptions,
     | 'pollingTime'
     | 'forbiddenPolling'
     | 'visibilityUsable'
+    | 'chunkCheckTypes'
 >;
 
 export type VersionControl = {

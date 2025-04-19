@@ -39,6 +39,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  worker: {
+    format: 'es' // 默认输出 ES 模块
+  },
   build: {
     target: 'es2015',
   },

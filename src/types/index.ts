@@ -13,6 +13,8 @@ export enum IVersionModeEnum {
 export enum IVersionCheckStatusEnum {
     NORMAL = 'normal',
     UPDATED = 'updated',
+    WORKER = 'worker',
+    ERROR = 'error',
 };
 
 export enum IWorkerMessageCodeEnum {

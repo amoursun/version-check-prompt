@@ -42,5 +42,12 @@
         "src/**/*.cjs",
         "src/**/*.mjs"
     ],
-    "exclude": ["src/**/*.test.ts", "node_modules", "dist"],
+    "exclude": [
+        // "src/**/*.test.ts",
+        "node_modules",
+        "dist",
+        "build-cache",
+        "examples",
+        "plugins",
+    ],
 }

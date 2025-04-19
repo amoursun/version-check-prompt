@@ -5,7 +5,7 @@ import { IHtmlSourceParserItem, IHtmlSourceParserResult } from '../types/common'
 
 
 
-function getResponseStatus(success: boolean): ResponseStatusEnum {
+export function getResponseStatus(success: boolean): ResponseStatusEnum {
     return success ? ResponseStatusEnum.OK : ResponseStatusEnum.FAIL;
 }
 export function handleEtagFetch(url?: string): Promise<ResponseResultData> {

@@ -28,7 +28,6 @@ export class WorkerPollingService implements IPollingService {
     constructor(options: IVersionCheckOptions, instance: IVersionCheckPrompt) {
         this.options = options;
         this.instance = instance;
-        this.mount();
     }
 
     private get type(): IVersionModeEnum {

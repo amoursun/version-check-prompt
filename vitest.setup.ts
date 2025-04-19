@@ -1,6 +1,6 @@
 // 引入 Jest DOM 的断言扩展
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { expect } from 'vitest';
+import { afterAll, beforeAll, expect } from 'vitest';
 
 // 扩展 Vitest 的 expect 方法
 expect.extend(matchers);
@@ -9,3 +9,11 @@ expect.extend(matchers);
 if (typeof window !== 'undefined') {
   // 浏览器环境下的初始化代码
 }
+
+beforeAll(() => {
+  // 测试套件开始前执行（如启动 mock 服务）
+});
+
+afterAll(() => {
+  // 测试套件结束后执行（如关闭数据库连接）
+});

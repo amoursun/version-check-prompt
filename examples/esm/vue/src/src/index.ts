@@ -2,6 +2,7 @@ import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum } from './t
 import { defaultOptions } from './common/constant';
 import { IntervalPollingService } from './polling/setinterval';
 import { WorkerPollingService } from './polling/worker';
+import { Omega, omega } from './omega';
 
 export class VersionCheckPrompt implements IVersionCheckPrompt {
     private options: IVersionCheckOptions;
@@ -46,9 +47,12 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
                 console.warn(`[mode] ${mode} is not supported`);
                 return;
             }
-            this.instance = new this.PollingService(this.options, this);
+            // this.instance = new this.PollingService(this.options, this);
+            this.instance = omega(new this.PollingService(this.options, this))();
+            console.log(this.instance, 'this.instance')
             // 添加事件
             this.addEvents();
+            this.mount();
         }
     }
 

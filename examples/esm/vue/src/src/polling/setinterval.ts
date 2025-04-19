@@ -18,7 +18,6 @@ export class IntervalPollingService implements IPollingService {
         this.options = options;
         this.instance = instance;
         this.created();
-        this.mount();
     }
 
     private get type() {
