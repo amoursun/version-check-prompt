@@ -38,6 +38,14 @@ export interface IVersionCheckPrompt {
     // 注销卸载
     dispose: () => void;
 }
+export interface IActivityService {
+    // 挂载
+    mount: () => void;
+    // 重置 30s 后重新检测
+    reset: () => void;
+    // 注销卸载
+    dispose: () => void;
+}
 
 export enum IChunkCheckTypesEnum {
     /**
@@ -56,6 +64,32 @@ export enum IChunkCheckTypesEnum {
      * script src
      */
     SCRIPT_SRC = 'script_src',
+}
+
+/**
+ * 浏览器活跃态配置
+ */
+export interface IActivityOption {
+    /**
+     * 是否可使用
+     * @default false
+     */
+    usable?: boolean;
+    /**
+     * 检测time
+     * @default 1 * 4 * 60 * 60 * 1000 (4 hour)
+     */
+    duration?: number;
+    /**
+     * 监听的事件名, 可以自己提供, 用于触发刷新当前活跃时间, activeTime 后提示
+     * @default ['click', 'mousemove', 'keydown', 'scroll', 'touchstart']
+     */
+    eventNames?: string[];
+    /**
+     * 超时回调
+     * @param self 当前版本检查实例
+     */
+    onInactivityPrompt: (self: IActivityService) => void;
 }
 
 export interface IVersionCheckOptions {
@@ -85,7 +119,7 @@ export interface IVersionCheckOptions {
     jsonUrl?: string;
     /**
      * 轮训 time
-     * @default 1 * 60 * 1000 (1 minute)
+     * @default 5 * 60 * 1000 (1 minute)
      */
     pollingTime?: number;
     /**
@@ -98,8 +132,20 @@ export interface IVersionCheckOptions {
      * @default false (true 暂停, false 恢复)
      */
     visibilityUsable?: boolean;
+    /**
+     * 版本更新后, 提示用户更新, 用户可以选择更新或者不更新, 后续不在提示
+     * @param self 当前版本检查实例
+     */
     onUpdate?: (self: IVersionCheckPrompt) => void;
+    /**
+     * 错误回调
+     * @param error 错误信息
+     */
     onError?: (error: Error) => void;
+    /**
+     * 浏览器活跃相关配置
+     */
+    activityOption?: IActivityOption;
 }
 
 export type IWorkerData = Pick<IVersionCheckOptions,

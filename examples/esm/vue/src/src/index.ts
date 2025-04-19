@@ -1,12 +1,14 @@
 import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum } from './types';
-import { defaultOptions } from './common/constant';
+import { checkPollingTime, defaultOptions } from './common/constant';
 import { IntervalPollingService } from './polling/setinterval';
 import { WorkerPollingService } from './polling/worker';
 import { Omega, omega } from './omega';
+import { ActivityService } from './polling/activity';
 
 export class VersionCheckPrompt implements IVersionCheckPrompt {
     private options: IVersionCheckOptions;
     private instance!: WorkerPollingService | IntervalPollingService;
+    private activityInstance!: ActivityService;
     constructor(options: IVersionCheckOptions) {
         this.options = Object.assign({}, defaultOptions, options);
         this.createInstance();
@@ -34,6 +36,10 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
         return this.options.usable;
     }
 
+    private get pollingTime() {
+        return this.options.pollingTime || checkPollingTime;
+    }
+
     /**
      * 创建实例
      */
@@ -47,12 +53,19 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
                 console.warn(`[mode] ${mode} is not supported`);
                 return;
             }
-            // this.instance = new this.PollingService(this.options, this);
-            this.instance = omega(new this.PollingService(this.options, this))();
-            console.log(this.instance, 'this.instance')
+            this.instance = omega(new this.PollingService({
+                ...this.options,
+                pollingTime: this.pollingTime,
+            }, this))();
             // 添加事件
             this.addEvents();
             this.mount();
+        }
+
+        // 活跃监听是否使用
+        if (this.options.activityOption?.usable) {
+            this.activityInstance = omega(new ActivityService(this.options.activityOption, this))();
+            this.activityInstance?.mount();
         }
     }
 
@@ -81,6 +94,10 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
         this.instance?.check();
     }
 
+    public activityReset() {
+        this.activityInstance?.mount();
+    }
+
     /**
      * 添加事件的方法
      */
@@ -103,6 +120,7 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
     public dispose() {
         this.removeEvents();
         this.instance?.dispose();
+        this.activityInstance?.dispose();
     }
 }
 

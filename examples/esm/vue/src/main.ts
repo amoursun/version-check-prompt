@@ -21,6 +21,17 @@ createVersionCheckPrompt({
         } else {
         }
     },
+    activityOption: {
+        usable: true,
+        duration: 30 * 1000,
+        onInactivityPrompt: (self) => {
+            const result = confirm('页面停留时间过长没有触发，点击确定刷新页面！');
+            if (result) {
+                self.reset();
+            } else {
+            }
+        },
+    }
 });
 
 const app = createApp(App);

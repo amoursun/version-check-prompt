@@ -7,7 +7,7 @@ import {
     IWorkerMessageCodeEnum,
     VersionControl,
 } from '../types';
-import { closeWorker, createWorker, htmlSourceParser } from '../utils';
+import { closeWorker, createWorker, htmlSourceParser, log } from '../utils';
 import {
     checkUpdated,
 } from '../utils/util-polling';
@@ -55,7 +55,7 @@ export class WorkerPollingService implements IPollingService {
             else {
                 updated = checkUpdated(data.data, result, options);
             }
-            console.log({data, updated});
+            log('web worker check updated', {updated, data, result});
             if (updated) {
                 this.dispose(); // 注销
                 // 提醒用户更新
@@ -307,7 +307,6 @@ export class WorkerPollingService implements IPollingService {
                 }
             };
         });
-
         // 监听工作线程的消息
         this.worker.onmessage = this.workerMessage;
     

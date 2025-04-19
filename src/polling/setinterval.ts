@@ -136,7 +136,7 @@ export class IntervalPollingService implements IPollingService {
 
         this.clearInterval();
         this.timerId = setInterval(
-            this.control.check,
+            () => this.control?.check(),
             this.options.pollingTime,
         );
     };
@@ -225,7 +225,6 @@ export class IntervalPollingService implements IPollingService {
     }
 
     public dispose = () => {
-        this.clearInterval();
         this.clearInterval();
         this.control = null;
     };

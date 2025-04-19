@@ -26,3 +26,5 @@ export interface IPollingService {
     // 注销卸载
     dispose: () => void;
 }
+
+
