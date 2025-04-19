@@ -45,7 +45,6 @@ export class WorkerPollingService implements IPollingService {
         const { code, data} = event.data;
         if (code === IVersionCheckStatusEnum.WORKER) {
             const { result, options } = data;
-            console.log(data, 111111);
             let updated = false;
             // this.type === IVersionModeEnum.CHUNK 或者这个直接判断
             if (options.mode === IVersionModeEnum.CHUNK) {
@@ -56,6 +55,7 @@ export class WorkerPollingService implements IPollingService {
             else {
                 updated = checkUpdated(data.data, result, options);
             }
+            console.log({data, updated});
             if (updated) {
                 this.dispose(); // 注销
                 // 提醒用户更新
