@@ -1,5 +1,5 @@
 {
-    "name": "version-check-prompt",
+    "name": "@amoursun/version-check-prompt",
     "version": "1.0.1",
     "description": "前端资源更新检查提示",
     "keywords": [
