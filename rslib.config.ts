@@ -6,7 +6,7 @@
 import { defineConfig, LibConfig, RslibConfig } from '@rslib/core';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-// import {pluginDts} from 'rsbuild-plugin-dts';
+import {pluginDts} from 'rsbuild-plugin-dts';
 import pkg from './package.json';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -70,10 +70,10 @@ export default defineConfig({
        * https://lib.rsbuild.dev/zh/config/lib/dts
        */
       // dts: true, // 在esm下生成
-      dts: {
-        distPath: './dist/types',
-        bundle: false, // 声明文件打包到指定目录文件, true 打包到 .rslib 文件
-      },
+      // dts: {
+      //   distPath: './dist/types',
+      //   // bundle: false, // 声明文件打包到指定目录文件, true 打包到 .rslib 文件
+      // },
     },
     {
       format: 'cjs',
@@ -139,15 +139,15 @@ export default defineConfig({
   plugins: [
     // 在 lib 配置中，dts 配置为 true 时，会自动使用, 但是生成文件路径
     // rsbuild-plugin-dts 插件，用于生成声明文件指定文件
-    // pluginDts({
-    //   distPath: './dist/types',
-    //   dtsExtension: '.d.ts',
-    //   bundle: false,
-    //   redirect: {
-    //     path: true,     // 启用路径重定向
-    //     extension: true // 修正扩展名
-    //   }
-    // }),
+    pluginDts({
+      distPath: './dist/types',
+      dtsExtension: '.d.ts',
+      bundle: false,
+      redirect: {
+        path: true,     // 启用路径重定向
+        extension: true // 修正扩展名
+      }
+    }),
   ],
   source,
   output: {
@@ -157,7 +157,7 @@ export default defineConfig({
      * entry: 全量注入 polyfill
      * off: 不注入任何 polyfill
      */
-    polyfill: 'usage', // 仅注入被使用的 API 的 polyfill
+    // polyfill: 'usage', // 仅注入被使用的 API 的 polyfill
     // 指定输出目录与源码目录分离
     distPath: {
       root: './dist',

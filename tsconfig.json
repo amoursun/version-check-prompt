@@ -43,7 +43,7 @@
         "src/**/*.mjs"
     ],
     "exclude": [
-        // "src/**/*.test.ts",
+        "src/**/*.test.ts",
         "node_modules",
         "dist",
         "build-cache",

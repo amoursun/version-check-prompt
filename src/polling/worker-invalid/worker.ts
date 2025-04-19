@@ -127,7 +127,7 @@ const handleCheck = async () => {
                 result: res,
                 options: {
                     mode: state.data.mode,
-                    chunkCheckTypes: state.data?.chunkCheckTypes,
+                    chunkCheckTypes: state.data.chunkCheckTypes,
                 }
             }
         });
@@ -158,7 +158,7 @@ const handleFetch = async (type: IVersionModeEnum): Promise<ResponseResultData> 
 const startPolling = () => {
     state.timerId = setInterval(
         () => state.control.check(),
-        state.data?.pollingTime  ?? 1 * 60 * 60 * 1000,
+        state.data.pollingTime ?? 1 * 60 * 60 * 1000,
     );
 };
 const pausePolling = () => {
@@ -174,7 +174,15 @@ const state: {
     control: VersionControl;
 } = {
     timerId: null,
-    data: {} as IWorkerData,
+    data: {
+        mode: IVersionModeEnum.ETAG,
+        htmlUrl: '',
+        jsonUrl: '',
+        pollingTime: 1 * 60 * 60 * 1000,
+        forbiddenPolling: false,
+        visibilityUsable: false,
+        chunkCheckTypes: [],
+    },
     control: {
         /**
          * 处理开始操作的方法, 存储首次版本信息, 方便后续对比
@@ -219,7 +227,7 @@ self.onmessage = (event: MessageEvent<{
         // 恢复轮询检查
         // 触发检查
         state.control.check();
-        if (!state.data?.forbiddenPolling) {
+        if (!state.data.forbiddenPolling) {
             // 开始轮询检查
             state.control.startPolling();
         }

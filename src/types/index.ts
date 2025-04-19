@@ -109,6 +109,7 @@ export type IWorkerData = Pick<IVersionCheckOptions,
     | 'pollingTime'
     | 'forbiddenPolling'
     | 'visibilityUsable'
+    | 'chunkCheckTypes'
 >;
 
 export type VersionControl = {
