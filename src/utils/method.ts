@@ -135,5 +135,22 @@ export function throwError(data: {
 
 export function log(...message: unknown[]) {
     console.log(`[version-check-prompt]:`, ...message);
+}
 
+export function debounce(func: Function, delay: number, immediate = false) {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    return (...args: unknown[]) => {
+        const context = this;
+        if (timer) clearTimeout(timer);
+        
+        if (immediate && !timer) {
+            func.apply(context, args); // 立即执行
+        }
+        timer = setTimeout(() => {
+            timer = null;
+            if (!immediate) {
+                func.apply(context, args); // 延迟执行
+            }
+        }, delay);
+    };
 }

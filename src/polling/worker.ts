@@ -12,11 +12,21 @@ import {
     checkUpdated,
 } from '../utils/util-polling';
 import { IPollingService, ResponseResultData } from '../types/polling';
+import { IdleTaskQueue } from './idle-task';
 
+interface IWorkerMessageEventData {
+    data: ResponseResultData['data']
+    result: ResponseResultData,
+    options: {
+        mode: IVersionCheckOptions['mode'],
+        chunkCheckTypes: IVersionCheckOptions['chunkCheckTypes'],
+    }
+}
 export class WorkerPollingService implements IPollingService {
     private instance: IVersionCheckPrompt;
     private options: IVersionCheckOptions;
     private worker: Worker | null = null;
+    private idleTaskQueue: IdleTaskQueue | null = null;
 
     constructor(options: IVersionCheckOptions, instance: IVersionCheckPrompt) {
         this.options = options;
@@ -27,39 +37,50 @@ export class WorkerPollingService implements IPollingService {
         return this.options.mode;
     }
 
+
+    /**
+     * 处理更新事件
+     *
+     * @param data 更新事件数据
+     */
+    private handleUpdated = (data: IWorkerMessageEventData) => {
+        const { result, options } = data;
+        // 判断是否更新
+        let updated = false;
+        // this.type === IVersionModeEnum.CHUNK 或者这个直接判断
+        if (options.mode === IVersionModeEnum.CHUNK) {
+            const chunkPrevData = htmlSourceParser(data.data as string);
+            result.data = htmlSourceParser(result.data as string);
+            updated = checkUpdated(chunkPrevData, result, options);
+        }
+        else {
+            updated = checkUpdated(data.data, result, options);
+        }
+        log('web worker check updated', {updated, data, result});
+        if (updated) {
+            this.dispose(); // 注销
+            // 提醒用户更新
+            this.options.onUpdate?.(this.instance);
+        }
+    }
     /**
      * 处理工作线程回传的消息的函数
      * @param event 消息事件对象，包含版本检查状态码
      */
     private workerMessage = (event: MessageEvent<{
         code: IVersionCheckStatusEnum;
-        data: {
-            data: ResponseResultData['data']
-            result: ResponseResultData,
-            options: {
-                mode: IVersionCheckOptions['mode'],
-                chunkCheckTypes: IVersionCheckOptions['chunkCheckTypes'],
-            }
-        };
+        data: IWorkerMessageEventData;
     }>) => {
         const { code, data} = event.data;
         if (code === IVersionCheckStatusEnum.WORKER) {
-            const { result, options } = data;
-            let updated = false;
-            // this.type === IVersionModeEnum.CHUNK 或者这个直接判断
-            if (options.mode === IVersionModeEnum.CHUNK) {
-                const chunkPrevData = htmlSourceParser(data.data as string);
-                result.data = htmlSourceParser(result.data as string);
-                updated = checkUpdated(chunkPrevData, result, options);
+            if (this.idleTaskQueue) {
+                this.idleTaskQueue.addTask(() => {
+                    this.handleUpdated(data);
+                });
             }
             else {
-                updated = checkUpdated(data.data, result, options);
-            }
-            log('web worker check updated', {updated, data, result});
-            if (updated) {
-                this.dispose(); // 注销
-                // 提醒用户更新
-                this.options.onUpdate?.(this.instance);
+                // 如果没有空闲任务队列，直接执行检查
+                this.handleUpdated(data);
             }
         }
         else if (code === IVersionCheckStatusEnum.UPDATED) {
@@ -332,6 +353,36 @@ export class WorkerPollingService implements IPollingService {
                 visibilityUsable,
             },
         });
+
+        // 初始化空闲任务队列
+        this.initIdleTaskQueue();
+    }
+
+    /**
+     * 初始化空闲任务队列
+     */
+    private initIdleTaskQueue(): void {
+        // 如果已经存在空闲任务队列，先清理
+        if (this.idleTaskQueue) {
+            this.idleTaskQueue.clear();
+        }
+
+        // 创建新的空闲任务队列
+        this.idleTaskQueue = new IdleTaskQueue(
+            [], // 初始任务列表为空
+            { 
+                timeout: 5000, // 设置超时时间为5秒
+                onError: (error: Error) => {
+                    console.error('版本检查空闲任务执行失败:', error);
+                }
+            }
+        );
+
+        // 添加定期检查版本的任务, 这里可以不需要
+        // this.idleTaskQueue.addTask(() => {
+        //     // 触发版本检查
+        //     this.check();
+        // });
     }
 
     /**
@@ -341,6 +392,11 @@ export class WorkerPollingService implements IPollingService {
         this.worker?.postMessage({
             code: IWorkerMessageCodeEnum.PAUSE,
         });
+        
+        // 清空空闲任务队列
+        if (this.idleTaskQueue) {
+            this.idleTaskQueue.clear();
+        }
     }
 
     /**
@@ -350,6 +406,9 @@ export class WorkerPollingService implements IPollingService {
         this.worker?.postMessage({
             code: IWorkerMessageCodeEnum.RESUME,
         });
+        
+        // 重新初始化空闲任务队列
+        this.initIdleTaskQueue();
     }
 
     /**
@@ -377,6 +436,12 @@ export class WorkerPollingService implements IPollingService {
             this.pause(); // 暂停轮询
             closeWorker(this.worker);
             this.worker = null;
+        }
+        
+        // 清空空闲任务队列
+        if (this.idleTaskQueue) {
+            this.idleTaskQueue.clear();
+            this.idleTaskQueue = null;
         }
     }
 }

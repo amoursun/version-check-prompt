@@ -2,10 +2,10 @@ import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum } from './t
 import { checkPollingTime, defaultOptions } from './common/constant';
 import { IntervalPollingService } from './polling/setinterval';
 import { WorkerPollingService } from './polling/worker';
-import { Omega, omega } from './omega';
+import { Omega, omega } from './utils/omega';
 import { ActivityService } from './polling/activity';
 
-export class VersionCheckPrompt implements IVersionCheckPrompt {
+class VersionCheckPrompt implements IVersionCheckPrompt {
     private options: IVersionCheckOptions;
     private instance!: WorkerPollingService | IntervalPollingService;
     private activityInstance!: ActivityService;
@@ -53,10 +53,11 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
                 console.warn(`[mode] ${mode} is not supported`);
                 return;
             }
-            this.instance = omega(new this.PollingService({
+            this.instance = new this.PollingService({
                 ...this.options,
                 pollingTime: this.pollingTime,
-            }, this))();
+            }, this);
+
             // 添加事件
             this.addEvents();
             this.mount();
@@ -64,7 +65,7 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
 
         // 活跃监听是否使用
         if (this.options.activityOption?.usable) {
-            this.activityInstance = omega(new ActivityService(this.options.activityOption, this))();
+            this.activityInstance = new ActivityService(this.options.activityOption, this);
             this.activityInstance?.mount();
         }
     }
@@ -125,5 +126,6 @@ export class VersionCheckPrompt implements IVersionCheckPrompt {
 }
 
 export function createVersionCheckPrompt(options: IVersionCheckOptions) {
-    return new VersionCheckPrompt(options);
+    const instance = new VersionCheckPrompt(options);
+    return omega(instance);
 }

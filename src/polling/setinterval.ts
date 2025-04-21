@@ -8,12 +8,15 @@ import {
 import { IPollingService, ResponseResultData, ResponseStatusEnum } from '../types/polling';
 import { log } from '../utils';
 import { checkUpdated, handleChunkFetch, handleEtagFetch, handleJsonFetch } from '../utils/util-polling';
+import { IdleTaskQueue } from './idle-task';
 
 export class IntervalPollingService implements IPollingService {
     private instance: IVersionCheckPrompt;
     private options: IVersionCheckOptions;
     private timerId: ReturnType<typeof setInterval> | null = null;
     private control: VersionControl | null = null;
+    private idleTaskQueue: IdleTaskQueue | null = null;
+    
     constructor(options: IVersionCheckOptions, instance: IVersionCheckPrompt) {
         this.options = options;
         this.instance = instance;
@@ -39,6 +42,33 @@ export class IntervalPollingService implements IPollingService {
     };
 
     /**
+     * 初始化空闲任务队列
+     */
+    private initIdleTaskQueue(): void {
+        // 如果已经存在空闲任务队列，先清理
+        if (this.idleTaskQueue) {
+            this.idleTaskQueue.clear();
+        }
+
+        // 创建新的空闲任务队列
+        this.idleTaskQueue = new IdleTaskQueue(
+            [], // 初始任务列表为空
+            { 
+                timeout: 5000, // 设置超时时间为5秒
+                onError: (error: Error) => {
+                    console.error('版本检查空闲任务执行失败:', error);
+                }
+            }
+        );
+
+        // 添加定期检查版本的任务, 暂时不需要
+        // this.idleTaskQueue.addTask(() => {
+        //     // 触发版本检查
+        //     this.check();
+        // });
+    }
+
+    /**
      * 处理开始操作的方法, 存储首次版本信息, 方便后续对比
      */
     private handleStart = async (): Promise<void> => {
@@ -57,6 +87,34 @@ export class IntervalPollingService implements IPollingService {
             this.options.onError?.(error instanceof Error ? error : new Error(String(error)));
         }
     };
+
+    /**
+     * 处理更新逻辑的方法
+     *
+     * @param res 更新后的响应数据
+     */
+    private handleUpdated = (res: ResponseResultData) => {
+        // 更新逻辑
+        // 确保 control 和 data 不为 null
+        if (!this.control || this.control.data === null) {
+            return;
+        }
+        
+        const isUpdated = checkUpdated(
+            this.control.data,
+            res,
+            {
+                mode: this.type,
+                chunkCheckTypes: this.options.chunkCheckTypes,
+            }
+        );
+
+        if (isUpdated) {
+            this.dispose(); // 注销
+            // 提醒用户更新
+            this.options.onUpdate?.(this.instance);
+        }
+    };
     /**
      * 处理检查更新逻辑的方法
      */
@@ -72,20 +130,15 @@ export class IntervalPollingService implements IPollingService {
                 return;
             }
 
-            const isUpdated = checkUpdated(
-                this.control.data,
-                res,
-                {
-                    mode: this.type,
-                    chunkCheckTypes: this.options.chunkCheckTypes,
-                }
-            );
-
-            if (isUpdated) {
-                // this.control.cacheData = res.data;
-                this.dispose(); // 注销
-                // 提醒用户更新
-                this.options.onUpdate?.(this.instance);
+            // 将版本检查逻辑添加到空闲任务队列中
+            if (this.idleTaskQueue) {
+                this.idleTaskQueue.addTask(() => {
+                    this.handleUpdated(res);
+                });
+            }
+            else {
+                // 如果没有空闲任务队列，直接执行检查
+                this.handleUpdated(res);
             }
         } catch (error) {
             this.options.onError?.(
@@ -185,6 +238,9 @@ export class IntervalPollingService implements IPollingService {
         this.handleMessage({
             code: IWorkerMessageCodeEnum.START,
         });
+        
+        // 初始化空闲任务队列
+        this.initIdleTaskQueue();
     }
     /**
      * 暂停任务
@@ -193,6 +249,11 @@ export class IntervalPollingService implements IPollingService {
         this.handleMessage({
             code: IWorkerMessageCodeEnum.PAUSE,
         });
+        
+        // 清空空闲任务队列
+        if (this.idleTaskQueue) {
+            this.idleTaskQueue.clear();
+        }
     };
     /**
      * 恢复任务
@@ -201,6 +262,9 @@ export class IntervalPollingService implements IPollingService {
         this.handleMessage({
             code: IWorkerMessageCodeEnum.RESUME,
         });
+        
+        // 重新初始化空闲任务队列
+        this.initIdleTaskQueue();
     };
     /**
      * 检查方法
@@ -227,5 +291,11 @@ export class IntervalPollingService implements IPollingService {
     public dispose = () => {
         this.clearInterval();
         this.control = null;
+        
+        // 清空空闲任务队列
+        if (this.idleTaskQueue) {
+            this.idleTaskQueue.clear();
+            this.idleTaskQueue = null;
+        }
     };
 }
