@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       version-check-prompt:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.4
+        version: 1.0.4
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
@@ -1302,8 +1302,8 @@ packages:
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
 
-  version-check-prompt@1.0.1:
-    resolution: {integrity: sha512-NyJHY/oDzthbZpnfWZ0v9uexcTe9RJU1ClvbL99YtfJU/l7PkR9pw7jY97s5RJmwn2F7TERGPFrvBkxoCCs/sg==}
+  version-check-prompt@1.0.4:
+    resolution: {integrity: sha512-QEJOy2BtqApqofasCwrny+VRT7zn1FCma3Wmcx/MdsJAyVeHXZMPnQN33+qeLlhbJY3ghQQQ40rYRxmSUJN7GA==}
     engines: {node: '>=18.0.0', pnpm: '>=9.0.0'}
 
   vite@6.2.6:
@@ -2845,7 +2845,7 @@ snapshots:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
 
-  version-check-prompt@1.0.1: {}
+  version-check-prompt@1.0.4: {}
 
   vite@6.2.6(@types/node@22.14.1):
     dependencies:

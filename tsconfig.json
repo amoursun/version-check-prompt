@@ -5,7 +5,8 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "removeComments": true,
-        "outDir": "dist/types",
+        "outDir": "dist",
+        "declaration": true,
         "strict": true,
         "jsx": "preserve", // 在.tsx文件里支持JSX
         "resolveJsonModule": true,

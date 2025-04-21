@@ -3,8 +3,7 @@ import App from './app.vue';
 import router from './router';
 import './assets/main.css';
 
-import { createVersionCheckPrompt } from './src';
-import { IVersionCheckPrompt, IVersionModeEnum } from './src/types';
+import { createVersionCheckPrompt, IVersionCheckPrompt, IVersionModeEnum } from 'version-check-prompt';
 
 // /**
 //  *
@@ -24,7 +23,7 @@ createVersionCheckPrompt({
     activityOption: {
         usable: true,
         duration: 30 * 1000,
-        onInactivityPrompt: (self) => {
+        onInactivityPrompt: (self: IVersionCheckPrompt) => {
             const result = confirm('页面停留时间过长没有触发，点击确定刷新页面！');
             if (result) {
                 self.reset();
