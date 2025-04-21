@@ -137,20 +137,51 @@ export function log(...message: unknown[]) {
     console.log(`[version-check-prompt]:`, ...message);
 }
 
-export function debounce(func: Function, delay: number, immediate = false) {
+/**
+ * 防抖函数
+ * 
+ * @param func 要执行的函数
+ * @param delay 延迟时间（毫秒）
+ * @param immediate 是否立即执行
+ * @returns 防抖处理后的函数
+ */
+export function debounce<T extends (...args: any[]) => any>(
+    func: T,
+    delay: number,
+    immediate = false
+): (...args: Parameters<T>) => void {
     let timer: ReturnType<typeof setTimeout> | null = null;
-    return (...args: unknown[]) => {
+    let isFirstCall = true;
+    
+    return function(this: any, ...args: Parameters<T>): void {
         const context = this;
-        if (timer) clearTimeout(timer);
         
-        if (immediate && !timer) {
-            func.apply(context, args); // 立即执行
-        }
-        timer = setTimeout(() => {
+        // 清除之前的定时器
+        if (timer) {
+            clearTimeout(timer);
             timer = null;
-            if (!immediate) {
-                func.apply(context, args); // 延迟执行
+        }
+        
+        // 立即执行模式
+        if (immediate) {
+            // 第一次调用或定时器已清除时执行
+            if (isFirstCall) {
+                func.apply(context, args);
+                isFirstCall = false;
             }
-        }, delay);
+            
+            // 设置定时器，在延迟时间后重置 isFirstCall
+            timer = setTimeout(() => {
+                timer = null;
+                isFirstCall = true;
+            }, delay);
+        } 
+        // 延迟执行模式
+        else {
+            timer = setTimeout(() => {
+                timer = null;
+                func.apply(context, args);
+            }, delay);
+        }
     };
 }

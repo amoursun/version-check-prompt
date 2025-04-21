@@ -1,3 +1,4 @@
+import { debounce } from '../utils';
 import { checkDuration, defaultActivityOption } from '../common/constant';
 import {
     IActivityOption,
@@ -26,11 +27,11 @@ export class ActivityService implements IActivityService {
     }
 
     // 监听用户操作事件
-    private resetTimer = () => {
+    private resetTimer = debounce(() => {
         this.lastActivityTime = Date.now();
         // 重新开始
         this.start();
-    };
+    }, 50);
     /**
      * 创建控制对象
      */
