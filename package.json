@@ -1,6 +1,6 @@
 {
     "name": "@amoursun/version-check-prompt",
-    "version": "1.0.1",
+    "version": "1.0.1-alpha.0",
     "description": "前端资源更新检查提示",
     "keywords": [
         "version",
@@ -47,8 +47,7 @@
         "changeset": "changeset",
         "build:package": "zx script/package-config.js",
         "build:test:version": "zx scripts/generate-version.js -o dest/json",
-        "prepare": "pnpm run build",
-        "publish": "npm publish --access public --registry=https://registry.npmjs.org"
+        "prepare": "pnpm run build"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
