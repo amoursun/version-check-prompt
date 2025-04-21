@@ -129,3 +129,5 @@ export function createVersionCheckPrompt(options: IVersionCheckOptions) {
     const instance = new VersionCheckPrompt(options);
     return omega(instance);
 }
+
+export * from './types';
