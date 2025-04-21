@@ -25,6 +25,7 @@
     "private": false,
     "exports": {
         ".": {
+            "types": "./dist/types/index.d.ts",
             "browser": "./dist/umd/index.min.js",
             "import": "./dist/esm/index.js",
             "require": "./dist/cjs/index.js"
