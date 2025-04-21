@@ -1,6 +1,6 @@
 {
     "name": "version-check-prompt",
-    "version": "1.0.3",
+    "version": "1.0.2",
     "description": "前端资源更新检查提示",
     "keywords": [
         "version",
@@ -48,7 +48,7 @@
         "build:package": "zx script/package-config.js",
         "build:test:version": "zx scripts/generate-version.js -o dest/json",
         "prepare": "pnpm run build",
-        "publish": "pnpm run build:package && changeset publish --access public"
+        "publish": "pnpm run build:package && npm publish"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
