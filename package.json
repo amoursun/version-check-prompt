@@ -1,6 +1,6 @@
 {
     "name": "version-check-prompt",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "前端资源更新检查提示",
     "keywords": [
         "version",
