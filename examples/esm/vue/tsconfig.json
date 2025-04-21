@@ -11,6 +11,7 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "types": [],
+        "typeRoots": ["./src/types", "./node_modules/@types"],
         "baseUrl": "./",	// 解析非相对模块的基地址，默认是当前目录
         // 模块名到基于 baseUrl的路径映射的列表。
         "paths": {

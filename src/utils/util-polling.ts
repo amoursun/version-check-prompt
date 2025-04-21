@@ -11,10 +11,10 @@ export function getResponseStatus(success: boolean): ResponseStatusEnum {
 export function handleEtagFetch(url?: string): Promise<ResponseResultData> {
     const mode = IVersionModeEnum.ETAG;
     if (!url) {
-        const error = new Error(
-            `[${mode}] htmlUrl is null, please check your options`
-        );
-        return Promise.reject(error);
+        // throw new Error(
+        //     `[${mode}] htmlUrl is null, please check your options`
+        // );
+        return Promise.reject(`[${mode}] htmlUrl is null, please check your options`);
     }
     return fetch(url, {
         method: 'HEAD',
@@ -34,10 +34,8 @@ export function handleEtagFetch(url?: string): Promise<ResponseResultData> {
 export function handleChunkFetch(url?: string): Promise<ResponseResultData> {
     const mode = IVersionModeEnum.CHUNK;
     if (!url) {
-        const error = new Error(
-            `[${mode}] htmlUrl is null, please check your options`
-        );
-        return Promise.reject(error);
+        return Promise.reject(`[${mode}] htmlUrl is null, please check your options`);
+        // throw new Error(`[${mode}] htmlUrl is null, please check your options`)
     }
     return fetch(`${url}?t=${Date.now()}`)
         .then((response) => response.text())

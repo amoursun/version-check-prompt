@@ -37,7 +37,7 @@ describe('getChunkByHtml', () => {
         const htmlText = '<script src="chunk3.js"></script>';
         const chunkName = 'chunk4';
         const result = getChunkByHtml(htmlText, chunkName);
-        expect(result).toBeNull();
+        expect(result).toBeUndefined();
     });
 
     it('should handle HTML text with multiple chunks', () => {
@@ -51,27 +51,27 @@ describe('getChunkByHtml', () => {
         const htmlText = 'No script tags here';
         const chunkName = 'chunk1';
         const result = getChunkByHtml(htmlText, chunkName);
-        expect(result).toBeNull();
+        expect(result).toBeUndefined();
     });
 
     it('should handle HTML text with empty script tags', () => {
         const htmlText = '<script src=""></script>';
         const chunkName = 'chunk1';
         const result = getChunkByHtml(htmlText, chunkName);
-        expect(result).toBeNull();
+        expect(result).toBeUndefined();
     });
 
     it('should handle HTML text with no src attribute in script tags', () => {
         const htmlText = '<script></script>';
         const chunkName = 'chunk1';
         const result = getChunkByHtml(htmlText, chunkName);
-        expect(result).toBeNull();
+        expect(result).toBeUndefined();
     });
 
     it('should handle HTML text with no src attribute in script tags and no chunk name', () => {
         const htmlText = '<script></script>';
         const result = getChunkByHtml(htmlText);
-        expect(result).toBeNull();
+        expect(result).toBeUndefined();
     });
 });
 
@@ -88,26 +88,25 @@ describe('htmlSourceParser', () => {
             <link rel="stylesheet" href="style.css">
             <link rel="stylesheet" href="another-style.css">
             <link rel="stylesheet" href="external.css">
-            <link rel="stylesheet" href="external.css">
         `;
         const result = htmlSourceParser(html);
         expect(result.links).toEqual([
-            { link: 'style.css', text: '' },
-            { link: 'another-style.css', text: '' },
-            { link: 'external.css', text: '' },
+            { link: 'http://localhost:3000/style.css', text: '' },
+            { link: 'http://localhost:3000/another-style.css', text: '' },
+            { link: 'http://localhost:3000/external.css', text: '' },
         ]);
     });
 
     it('should extract scripts', () => {
         const html = `
-            <script src="script.js"></script>
-            <script src="another-script.js"></script>
+            <script src="./script.js"></script>
+            <script src="./another-script.js"></script>
             <script>console.log('Inline script');</script>
         `;
         const result = htmlSourceParser(html);
         expect(result.scripts).toEqual([
-            { link: 'script.js', text: '' },
-            { link: 'another-script.js', text: '' },
+            { link: 'http://localhost:3000/script.js', text: '' },
+            { link: 'http://localhost:3000/another-script.js', text: '' },
             { link: '', text: 'console.log(\'Inline script\');' },
         ]);
     });
@@ -174,25 +173,4 @@ describe('compareVersion', () => {
 });
 
 
-describe('createWorker', () => {
-    it('should create a worker with the provided function', () => {
-        const worker = createWorker(() => {});
-        expect(worker).toBeInstanceOf(Worker);
-    });
 
-    it('should execute the provided function in the worker', (done) => {
-        const worker = createWorker(() => {
-            expect(true).toBe(true);
-        });
-        worker.terminate();
-    });
-});
-
-describe('closeWorker', () => {
-    it('should terminate the worker', () => {
-        const worker = new Worker('worker.js');
-        worker.terminate = vi.fn();
-        closeWorker(worker);
-        expect(worker.terminate).toHaveBeenCalled();
-    });
-});

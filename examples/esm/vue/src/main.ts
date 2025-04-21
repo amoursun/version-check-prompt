@@ -3,7 +3,8 @@ import App from './app.vue';
 import router from './router';
 import './assets/main.css';
 
-import { createVersionCheckPrompt, IActivityService, IVersionCheckPrompt, IVersionModeEnum } from '@amoursun/version-check-prompt';
+import { createVersionCheckPrompt, IActivityService, IVersionCheckPrompt, IVersionModeEnum} from '@amoursun/version-check-prompt';
+// 尝试明确从类型声明文件导入
 
 // /**
 //  *

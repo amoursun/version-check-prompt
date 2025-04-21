@@ -1,6 +1,6 @@
 {
     "name": "@amoursun/version-check-prompt",
-    "version": "1.0.1-alpha.0",
+    "version": "1.0.1-alpha.1",
     "description": "前端资源更新检查提示",
     "keywords": [
         "version",
@@ -29,25 +29,30 @@
             "browser": "./dist/umd/index.min.js",
             "import": "./dist/esm/index.js",
             "require": "./dist/cjs/index.js"
+        },
+        "./types": {
+            "types": "./dist/types/index.d.ts"
         }
     },
-    "main": "./dist/cjs/index.js",
-    "module": "./dist/esm/index.js",
-    "browser": "./dist/umd/index.js",
-    "unpkg": "./dist/umd/index.min.js",
-    "types": "./dist/types/index.d.ts",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "browser": "dist/umd/index.js",
+    "unpkg": "dist/umd/index.min.js",
+    "types": "dist/types/index.d.ts",
     "files": [
         "dist"
     ],
     "scripts": {
         "build": "pnpm run clean && rslib build",
         "dev": "rslib build --watch",
-        "test": "vitest",
         "clean": "rimraf dist",
         "changeset": "changeset",
         "build:package": "zx script/package-config.js",
         "build:test:version": "zx scripts/generate-version.js -o dest/json",
-        "prepare": "pnpm run build"
+        "prepare": "pnpm run build",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "test:coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
