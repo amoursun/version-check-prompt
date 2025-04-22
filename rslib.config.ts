@@ -117,24 +117,43 @@ export default defineConfig({
         type: 'umd',
       }),
     },
+    // custom-version
     {
       format: 'cjs',
       source: {
         entry: {
-          index: path.resolve(__dirname, 'scripts/generate-version.js'),
+          index: path.resolve(__dirname, 'scripts/custom-version.js'),
         },
       },
       output: {
         target: 'node',
         minify: false,
         filename: {
-          js: 'generate-version.cjs',
+          js: 'custom-version.cjs',
         },
         distPath: {
           root: `./dist/scripts`
         },
       },
     },
+    // {
+    //   format: 'esm',
+    //   source: {
+    //     entry: {
+    //       index: path.resolve(__dirname, 'scripts/custom-version.js'),
+    //     },
+    //   },
+    //   output: {
+    //     target: 'node',
+    //     minify: false,
+    //     filename: {
+    //       js: 'custom-version.js',
+    //     },
+    //     distPath: {
+    //       root: `./dist/scripts`
+    //     },
+    //   },
+    // },
   ],
   plugins: [
     // 在 lib 配置中，dts 配置为 true 时，会自动使用, 但是生成文件路径

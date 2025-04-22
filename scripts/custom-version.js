@@ -102,5 +102,9 @@ function updateVersion() {
     console.log('版本已更新:', newInfo);
 }
 
-// 执行更新操作
-updateVersion();
+function main() {
+    // 执行更新操作
+    updateVersion();
+}
+
+main();

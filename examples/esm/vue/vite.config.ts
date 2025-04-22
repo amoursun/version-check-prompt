@@ -10,31 +10,27 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    {
-      name: 'add-etag',
-      configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          // if (req.url?.endsWith('.html')) {
-          //   res.setHeader('Cache-Control', 'no-cache');
-          //   res.setHeader('ETag', etag(Date.now().toString()));
-          // }
-          if (req.url === '/' || req.url === '/index.html') {
-            const originalEnd = res.end;
-            // 覆盖 res.end 方法以生成 ETag
-            // @ts-ignore
-            res.end = function (data) {
-              // 生成 ETag（基于内容哈希）
-              // const hash = etag(data);
-              const value = Math.random().toString();
-              const hash = etag(value);
-              res.setHeader('ETag', hash);
-              originalEnd.call(this, data);
-            };
-          }
-          next();
-        });
-      }
-    }
+    // {
+    //   name: 'add-etag',
+    //   configureServer(server) {
+    //     server.middlewares.use((req, res, next) => {
+    //       if (req.url === '/' || req.url === '/index.html') {
+    //         const originalEnd = res.end;
+    //         // 覆盖 res.end 方法以生成 ETag
+    //         // @ts-ignore
+    //         res.end = function (data) {
+    //           // 生成 ETag（基于内容哈希）
+    //           // const hash = etag(data);
+    //           const value = Math.random().toString();
+    //           const hash = etag(value);
+    //           res.setHeader('ETag', hash);
+    //           originalEnd.call(this, data);
+    //         };
+    //       }
+    //       next();
+    //     });
+    //   }
+    // }
   ],
   resolve: {
     alias: {

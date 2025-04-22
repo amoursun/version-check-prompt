@@ -32,6 +32,9 @@
         },
         "./types": {
             "types": "./dist/types/index.d.ts"
+        },
+        "./custom-version": {
+            "require": "./dist/scripts/generate-version.cjs"
         }
     },
     "main": "dist/cjs/index.js",

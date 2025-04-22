@@ -12,7 +12,7 @@ import { createVersionCheckPrompt, IActivityService, IVersionCheckPrompt, IVersi
 //  *
 //  */
 createVersionCheckPrompt({
-    mode: IVersionModeEnum.ETAG,
+    mode: IVersionModeEnum.CHUNK,
     pollingTime: 30 * 1000,
     visibilityUsable: true,
     onUpdate: (self: IVersionCheckPrompt) => {
