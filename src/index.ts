@@ -1,4 +1,4 @@
-import { IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum } from './types';
+import { IPollingTypeEnum, IVersionCheckOptions, IVersionCheckPrompt, IVersionModeEnum } from './types';
 import { checkPollingTime, defaultOptions } from './common/constant';
 import { IntervalPollingService } from './polling/setinterval';
 import { WorkerPollingService } from './polling/worker';
@@ -26,7 +26,7 @@ class VersionCheckPrompt implements IVersionCheckPrompt {
     };
 
     private get PollingService() {
-        if (window.Worker) {
+        if (this.options.usePollingType === IPollingTypeEnum.WEB_WORKER && window.Worker) {
             return WorkerPollingService;
         }
         return IntervalPollingService;
@@ -66,7 +66,6 @@ class VersionCheckPrompt implements IVersionCheckPrompt {
         // 活跃监听是否使用
         if (this.options.activityOption?.usable) {
             this.activityInstance = new ActivityService(this.options.activityOption, this);
-            this.activityInstance?.mount();
         }
     }
 

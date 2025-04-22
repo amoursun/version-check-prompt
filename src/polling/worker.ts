@@ -38,7 +38,7 @@ export class WorkerPollingService implements IPollingService {
     }
 
     private get type(): IVersionModeEnum {
-        return this.options.mode;
+        return this.options.mode; 
     }
 
 
@@ -267,31 +267,31 @@ export class WorkerPollingService implements IPollingService {
                 } catch (error) {
                     throw new Error(error instanceof Error ? error.message : String(error));
                 }
-            };
-            /**
-             * 处理不同类型的获取请求
+    };
+    /**
+     * 处理不同类型的获取请求
              */
             const handleFetch = async (type: IVersionModeEnum): Promise<ResponseResultData> => {
                 const { htmlUrl, jsonUrl } = state.data || {};
                 switch (type) {
                     case IVersionModeEnum.ETAG:
-                        return handleEtagFetch(htmlUrl);
+            return handleEtagFetch(htmlUrl);
                     case IVersionModeEnum.CHUNK:
-                        return handleChunkFetch(htmlUrl);
+            return handleChunkFetch(htmlUrl);
                     case IVersionModeEnum.JSON:
-                        return handleJsonFetch(jsonUrl);
+            return handleJsonFetch(jsonUrl);
                     default:
                         return {
-                            status: ResponseStatusEnum.FAIL,
+            status: ResponseStatusEnum.FAIL,
                             mode: type,
-                            data: null,
+            data: null,
                             error: `[${type}] mode is not supported`,
                         };
                 }
-            };
-            
-            /**
-             * 开始轮询检查
+    };
+
+    /**
+     * 开始轮询检查
              */
             const startPolling = () => {
                 state.timerId = setInterval(
@@ -332,25 +332,25 @@ export class WorkerPollingService implements IPollingService {
                     pausePolling,
                 },
             };
-            /**
-             * 处理从 Worker 发送过来的消息
-             */
+    /**
+     * 处理从 Worker 发送过来的消息
+     */
             self.onmessage = (event: MessageEvent<{
-                code: IWorkerMessageCodeEnum;
-                data: IWorkerData;
-            }>) => {
-                const { code, data } = event.data;
-                if (code === IWorkerMessageCodeEnum.START) {
+        code: IWorkerMessageCodeEnum;
+        data: IWorkerData;
+    }>) => {
+        const { code, data } = event.data;
+        if (code === IWorkerMessageCodeEnum.START) {
                     state.data = data;
-                    // 开始获取版本信息
+            // 开始获取版本信息
                     state.control.start();
                     if (!state.data.forbiddenPolling) {
-                        // 开始轮询检查
+                // 开始轮询检查
                         state.control.startPolling();
-                    }
-                }
-                else if (code === IWorkerMessageCodeEnum.PAUSE) {
-                    // 暂停轮询检查
+            }
+        }
+        else if (code === IWorkerMessageCodeEnum.PAUSE) {
+            // 暂停轮询检查
                     state.control.pausePolling();
                 }
                 else if (code === IWorkerMessageCodeEnum.PAUSE_CHECK) {
@@ -360,18 +360,18 @@ export class WorkerPollingService implements IPollingService {
                 else if (code === IWorkerMessageCodeEnum.RESUME_CHECK) {
                     // 检查恢复
                     state.control.startPolling();
-                }
-                else if (code === IWorkerMessageCodeEnum.RESUME) {
-                    // 恢复轮询检查
-                    // 触发检查
+        }
+        else if (code === IWorkerMessageCodeEnum.RESUME) {
+            // 恢复轮询检查
+            // 触发检查
                     state.control.check();
                     if (!state.data?.forbiddenPolling) {
-                        // 开始轮询检查
+                // 开始轮询检查
                         state.control.startPolling();
-                    }
-                }
-                else if (code === IWorkerMessageCodeEnum.CHECK) {
-                    // 触发检查
+            }
+        }
+        else if (code === IWorkerMessageCodeEnum.CHECK) {
+            // 触发检查
                     state.control.check();
                 }
             };

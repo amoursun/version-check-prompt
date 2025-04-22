@@ -1,9 +1,10 @@
-import { IActivityOption, IChunkCheckTypesEnum, IVersionCheckOptions, IVersionModeEnum } from '../types';
+import { IActivityOption, IChunkCheckTypesEnum, IPollingTypeEnum, IVersionCheckOptions, IVersionModeEnum } from '../types';
 import { noop } from '../utils';
 
 export const checkPollingTime =  5 * 60 * 1000; // 5分钟，默认单位为毫秒
 export const defaultOptions: IVersionCheckOptions = {
     usable: true,
+    usePollingType: IPollingTypeEnum.WEB_WORKER,
     mode: IVersionModeEnum.ETAG,
     htmlUrl: location.href,
     chunkCheckTypes: [IChunkCheckTypesEnum.SCRIPT_SRC],

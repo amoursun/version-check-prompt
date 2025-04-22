@@ -16,6 +16,7 @@ export class ActivityService implements IActivityService {
                 
         this.instance = instance;
         this.addEvents();
+        this.mount();
     }
 
     private get duration() {
@@ -65,7 +66,7 @@ export class ActivityService implements IActivityService {
     /**
      * 挂载方法: 启动工作进程
      */
-    public mount() {
+    private mount() {
         // 启动
         this.start();
     }

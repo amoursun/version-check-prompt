@@ -28,6 +28,17 @@ export enum IWorkerMessageCodeEnum {
     PAUSE_CHECK = 'pause-check',
 }
 
+export enum IPollingTypeEnum {
+    /**
+     * 使用 worker 检测更新
+     */
+    WEB_WORKER = 'worker',
+    /**
+     * 使用定时器检测更新
+     */
+    INTERVAL = 'interval',
+}
+
 export type IObject = Record<string, unknown>;
 
 export interface IVersionCheckPrompt {
@@ -46,8 +57,8 @@ export interface IVersionCheckPrompt {
 }
 export interface IActivityService {
     // 挂载
-    mount: () => void;
-    // 重置 30s 后重新检测
+    // mount: () => void;
+    // 重置检测
     reset: () => void;
     // 停止
     stop: () => void;
@@ -108,6 +119,12 @@ export interface IVersionCheckOptions {
      * @default true
      */
     usable?: boolean;
+    /**
+     * 使用轮训类型
+     * @default web worker 检测更新
+     *  - 降级为定时器检测更新
+     */
+    usePollingType?: IPollingTypeEnum;
     /**
      * Type of version check
      * @default 'etag'
