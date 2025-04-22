@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@amoursun/version-check-prompt':
-        specifier: 1.0.1-alpha.1
-        version: 1.0.1-alpha.1
+        specifier: 1.0.1-alpha.2
+        version: 1.0.1-alpha.2
       version-check-prompt:
         specifier: link:@types/@amoursun/version-check-prompt
         version: link:@types/@amoursun/version-check-prompt
@@ -63,8 +63,8 @@ importers:
 
 packages:
 
-  '@amoursun/version-check-prompt@1.0.1-alpha.1':
-    resolution: {integrity: sha512-tbX/Pdv+VMqlQ4iWtODL5Yrxj4p2aMNP2HBLQXJ6qwArLxciqY3yKSaWuKNWzFErNxZK8QD6OzVQmZUTpZG2hQ==}
+  '@amoursun/version-check-prompt@1.0.1-alpha.2':
+    resolution: {integrity: sha512-6tomOn5f7frUyDWOb5tunxrj7J6cMq9gr4cVSXpYX1gO2cAnx9ISUDdMzUPctXJE9a6h0r21wWdiEGn3PPHqMg==}
     engines: {node: '>=18.0.0', pnpm: '>=9.0.0'}
 
   '@ampproject/remapping@2.3.0':
@@ -1435,7 +1435,7 @@ packages:
 
 snapshots:
 
-  '@amoursun/version-check-prompt@1.0.1-alpha.1': {}
+  '@amoursun/version-check-prompt@1.0.1-alpha.2': {}
 
   '@ampproject/remapping@2.3.0':
     dependencies:
