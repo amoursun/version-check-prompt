@@ -173,11 +173,6 @@ export type IWorkerData = Pick<IVersionCheckOptions,
 export type VersionControl = {
     // status: IVersionCheckStatusEnum;
     /**
-     * 存储的版本信息, 提供给后续对比
-     * - 
-     */
-    data?: ResponseResultData['data'];
-    /**
      * 当前更新缓存的版本信息, 但是还没有替换掉旧的版本信息
      * @desc 存在用户不想更新, 但是已经知道了, 等待后续刷新
      * @todo 可能是不需要的, 因为提醒后要么刷新, 要么不刷新(这个时候用户主动放弃, 存在停止轮训, 或者后续在提示, 但是都是不会去替换的)
