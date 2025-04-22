@@ -23,6 +23,9 @@ export enum IWorkerMessageCodeEnum {
     PAUSE = 'pause',
     RESUME = 'resume',
     CHECK = 'check',
+    // 内部触发检查时候, 防止重复触发
+    RESUME_CHECK = 'resume-check',
+    PAUSE_CHECK = 'pause-check',
 }
 
 export type IObject = Record<string, unknown>;

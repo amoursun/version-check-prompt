@@ -61,6 +61,10 @@ export class WorkerPollingService implements IPollingService {
             updated = checkUpdated(data.data, result, options);
         }
         log('web worker check updated', {updated, data, result});
+        // 检查恢复, 防止处理过程中重复触发 (debugger 时候会触发多次, 这里暂时保留)
+        // this.worker?.postMessage({
+        //     code: IWorkerMessageCodeEnum.RESUME_CHECK,
+        // });
         if (updated) {
             this.dispose(); // 注销
             // 提醒用户更新
@@ -81,6 +85,10 @@ export class WorkerPollingService implements IPollingService {
             this.result = data.result.data;
         }
         else if (code === IVersionCheckStatusEnum.WORKER) {
+            // 先中断检查, 防止重复触发 (debugger 时候会触发多次, 这里暂时保留)
+            // this.worker?.postMessage({
+            //     code: IWorkerMessageCodeEnum.PAUSE_CHECK,
+            // });
             if (this.idleTaskQueue) {
                 this.idleTaskQueue.addTask(() => {
                     this.handleUpdated(data);
@@ -108,6 +116,9 @@ export class WorkerPollingService implements IPollingService {
                 PAUSE = 'pause',
                 RESUME = 'resume',
                 CHECK = 'check',
+                // 内部触发检查时候, 防止重复触发
+                RESUME_CHECK = 'resume-check',
+                PAUSE_CHECK = 'pause-check',
             }
             enum ResponseStatusEnum {
                 OK = 'ok',
@@ -194,35 +205,32 @@ export class WorkerPollingService implements IPollingService {
                     });
             }
 
-            // 发布到主线程处理逻辑
-            function postMessage(type: IVersionCheckStatusEnum, res: ResponseResultData) {
-                self.postMessage({
-                    code: IVersionCheckStatusEnum.UPDATE_RESULT,
-                    data: {
-                        data: state.data.result,
-                        result: res,
-                        options: {
-                            mode: state.data.mode,
-                            chunkCheckTypes: state.data?.chunkCheckTypes,
-                        }
-                    }
-                });
-            }
             /**
              * 处理开始操作的方法, 存储首次版本信息, 方便后续对比
              */
             const handleStart = async (): Promise<void> => {
                 try {
                     const res = await state.control.fetch(state.data.mode);
-                    console.log({res, state: state.data.result });
                     if (res.status === ResponseStatusEnum.OK) {
                         // 首次获取版本信息, 存储到 state.data.result
                         // state.data.result 存在则不会再触发更新
                         if (!state.data.result) {
                             // state.data result 更新
                             state.data.result = res.data;
-                            postMessage(IVersionCheckStatusEnum.NORMAL, res);
+                            self.postMessage({
+                                code: IVersionCheckStatusEnum.UPDATE_RESULT,
+                                data: {
+                                    data: state.data.result,
+                                    result: res,
+                                    options: {
+                                        mode: state.data.mode,
+                                        chunkCheckTypes: state.data?.chunkCheckTypes,
+                                    }
+                                }
+                            });
+                            // handlePostMessage(IVersionCheckStatusEnum.UPDATE_RESULT, res);
                         }
+                        console.log({res, state: state.data.result });
                     }
                     else {
                         throw new Error(res.error || 'Unknown error');
@@ -244,7 +252,18 @@ export class WorkerPollingService implements IPollingService {
                     
                     // state.data.result = res.data; // 这里不需要更新, 因为要么刷新, 要么先忽略
                     // 发布到主线程处理逻辑
-                    postMessage(IVersionCheckStatusEnum.WORKER, res);
+                    self.postMessage({
+                        code: IVersionCheckStatusEnum.WORKER,
+                        data: {
+                            data: state.data.result,
+                            result: res,
+                            options: {
+                                mode: state.data.mode,
+                                chunkCheckTypes: state.data?.chunkCheckTypes,
+                            }
+                        }
+                    });
+                    // handlePostMessage(IVersionCheckStatusEnum.WORKER, res);
                 } catch (error) {
                     throw new Error(error instanceof Error ? error.message : String(error));
                 }
@@ -333,6 +352,14 @@ export class WorkerPollingService implements IPollingService {
                 else if (code === IWorkerMessageCodeEnum.PAUSE) {
                     // 暂停轮询检查
                     state.control.pausePolling();
+                }
+                else if (code === IWorkerMessageCodeEnum.PAUSE_CHECK) {
+                    // 检查中断
+                    state.control.pausePolling();
+                }
+                else if (code === IWorkerMessageCodeEnum.RESUME_CHECK) {
+                    // 检查恢复
+                    state.control.startPolling();
                 }
                 else if (code === IWorkerMessageCodeEnum.RESUME) {
                     // 恢复轮询检查

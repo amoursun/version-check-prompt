@@ -298,13 +298,6 @@ export class IntervalPollingService implements IPollingService {
         this.mount();
     }
 
-    /**
-     * 忽略更新, 停止轮询检查, 直接就是注销
-     */
-    // public neglect = () => {
-    //     this.dispose();
-    // };
-
     public dispose = () => {
         this.clearInterval();
         
