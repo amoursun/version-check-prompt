@@ -43,6 +43,10 @@ export interface IActivityService {
     mount: () => void;
     // 重置 30s 后重新检测
     reset: () => void;
+    // 停止
+    stop: () => void;
+    // 刷新
+    refresh: () => void;
     // 注销卸载
     dispose: () => void;
 }

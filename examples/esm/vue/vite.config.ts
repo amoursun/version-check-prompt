@@ -24,7 +24,9 @@ export default defineConfig({
             // @ts-ignore
             res.end = function (data) {
               // 生成 ETag（基于内容哈希）
-              const hash = etag(data);
+              // const hash = etag(data);
+              const value = Math.random().toString();
+              const hash = etag(value);
               res.setHeader('ETag', hash);
               originalEnd.call(this, data);
             };

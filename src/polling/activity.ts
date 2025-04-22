@@ -82,6 +82,14 @@ export class ActivityService implements IActivityService {
         this.mount();
     }
 
+    public stop = () => {
+        this.clearTimeout();
+    };
+
+    public refresh = () => {
+        window.location.reload();
+    };
+
     private removeEvents = () => {
         this.eventNames.forEach(event => {
             document.removeEventListener(event, this.resetTimer);

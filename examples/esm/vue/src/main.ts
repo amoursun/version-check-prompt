@@ -12,23 +12,28 @@ import { createVersionCheckPrompt, IActivityService, IVersionCheckPrompt, IVersi
 //  *
 //  */
 createVersionCheckPrompt({
-    mode: IVersionModeEnum.CHUNK,
+    mode: IVersionModeEnum.ETAG,
     pollingTime: 30 * 1000,
     visibilityUsable: true,
     onUpdate: (self: IVersionCheckPrompt) => {
         const result = confirm('页面有更新，点击确定刷新页面！');
+        // 取消false, 确定true
         if (result) {
+            self.refresh();
         } else {
+            self.reset();
         }
     },
     activityOption: {
-        usable: true,
+        usable: false,
         duration: 30 * 1000,
         onInactivityPrompt: (self: IActivityService) => {
             const result = confirm('页面停留时间过长没有触发，点击确定刷新页面！');
+            // 取消false, 确定true
             if (result) {
-                self.reset();
+                self.refresh();
             } else {
+                self.reset();
             }
         },
     }
