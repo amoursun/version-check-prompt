@@ -339,3 +339,4 @@ npx vitest "src/**/utils/**/*.test.ts"
 
 # 测试所有以 .test.ts 结尾的文件
 npx vitest "**/*.test.ts"
+```
