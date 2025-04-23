@@ -1,6 +1,6 @@
 {
     "name": "@amoursun/version-check-prompt",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "前端资源更新检查提示",
     "keywords": [
         "version",
@@ -32,9 +32,6 @@
         },
         "./types": {
             "types": "./dist/types/index.d.ts"
-        },
-        "./custom-version": {
-            "require": "./dist/scripts/generate-version.cjs"
         }
     },
     "main": "dist/cjs/index.js",
@@ -51,7 +48,7 @@
         "clean": "rimraf dist",
         "changeset": "changeset",
         "build:package": "zx script/package-config.js",
-        "build:test:version": "zx scripts/generate-version.js -o dest/json",
+        "build:test:version": "zx script/custom-version.js -o dest/json",
         "prepare": "pnpm run build",
         "test": "vitest",
         "test:run": "vitest run",

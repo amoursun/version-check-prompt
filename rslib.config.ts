@@ -118,24 +118,24 @@ export default defineConfig({
       }),
     },
     // custom-version
-    {
-      format: 'cjs',
-      source: {
-        entry: {
-          index: path.resolve(__dirname, 'scripts/custom-version.js'),
-        },
-      },
-      output: {
-        target: 'node',
-        minify: false,
-        filename: {
-          js: 'custom-version.cjs',
-        },
-        distPath: {
-          root: `./dist/scripts`
-        },
-      },
-    },
+    // {
+    //   format: 'cjs',
+    //   source: {
+    //     entry: {
+    //       index: path.resolve(__dirname, 'scripts/custom-version.js'),
+    //     },
+    //   },
+    //   output: {
+    //     target: 'node',
+    //     minify: false,
+    //     filename: {
+    //       js: 'custom-version.cjs',
+    //     },
+    //     distPath: {
+    //       root: `./dist/scripts`
+    //     },
+    //   },
+    // },
     // {
     //   format: 'esm',
     //   source: {
