@@ -19,8 +19,10 @@
 ## 安装
 
 ```bash
-npm install @amoursun/version-check-prompt
+npm install @amoursun/version-check-prompt;
 
+<script src="https://unpkg.com/@amoursun/version-check-prompt@1.0.3/dist/umd/index.min.js"></script>
+<script src="https://unpkg.com/@amoursun/version-check-prompt@1.0.3/dist/umd/index.js"></script>
 
 ```
 
@@ -50,6 +52,13 @@ const versionCheck = createVersionCheckPrompt({
     },
   },
 });
+```
+### 引入
+```
+import VersionCheckPrompt from '@amoursun/version-check-prompt';
+const VersionCheckPrompt = require('@amoursun/version-check-prompt');
+<script src="https://unpkg.com/@amoursun/version-check-prompt@1.0.3/dist/umd/index.min.js"></script>
+<script src="https://unpkg.com/@amoursun/version-check-prompt@1.0.3/dist/umd/index.js"></script>
 ```
 
 ## 配置选项

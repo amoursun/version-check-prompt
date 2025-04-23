@@ -10,7 +10,7 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@amoursun/version-check-prompt": "1.0.2-beta.0",
+    "@amoursun/version-check-prompt": "^1.0.3",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@amoursun/version-check-prompt':
-        specifier: 1.0.2-beta.0
-        version: 1.0.2-beta.0
+        specifier: ^1.0.3
+        version: 1.0.3
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
@@ -60,8 +60,8 @@ importers:
 
 packages:
 
-  '@amoursun/version-check-prompt@1.0.2-beta.0':
-    resolution: {integrity: sha512-wi3JqGhpJSmC8AzN8GaIjA4YIMTOW+QRbIaH9KQEtdRC8KoZbrfJbRnaRyQ3inQlOj4CLpwzAc1gBb3eRckczw==}
+  '@amoursun/version-check-prompt@1.0.3':
+    resolution: {integrity: sha512-x32WW11lNsCd37CV053ZsazNz98eEhbXn7GodAZZKG3XOVLXFJAL9yQ4FM7cIHODW4Isx63fR9AFB4zP6oGGYQ==}
     engines: {node: '>=18.0.0', pnpm: '>=9.0.0'}
 
   '@ampproject/remapping@2.3.0':
@@ -1448,7 +1448,7 @@ packages:
 
 snapshots:
 
-  '@amoursun/version-check-prompt@1.0.2-beta.0': {}
+  '@amoursun/version-check-prompt@1.0.3': {}
 
   '@ampproject/remapping@2.3.0':
     dependencies:
